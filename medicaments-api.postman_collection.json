@@ -1,0 +1,46 @@
+{
+	"info": {
+		"_postman_id": "d2a6a8c5-379d-4054-b61b-c038e7a60112",
+		"name": "medicaments-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38774801",
+		"_collection_link": "https://www.postman.com/rbuj/workspace/uoc/collection/38774801-d2a6a8c5-379d-4054-b61b-c038e7a60112?action=share&source=collection_link&creator=38774801"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"john\",\n  \"password\": \"changeme\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
