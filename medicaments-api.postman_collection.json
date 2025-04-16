@@ -9,6 +9,20 @@
 	"item": [
 		{
 			"name": "auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var bodyAuth = JSON.parse(pm.response.text())",
+							"pm.environment.set(\"access_token\",bodyAuth.access_token);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [
