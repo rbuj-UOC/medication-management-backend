@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:latest
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    restart: always
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    volumes:
+      - ./.docker/postgres/config/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./.docker/postgres/certs/cert.pem:/var/lib/postgresql/cert.pem:ro
+      - ./.docker/postgres/certs/key.pem:/var/lib/postgresql/key.pem:ro
+      - ./db:/var/lib/postgresql/data
+    command: -c hba_file=/etc/postgresql/pg_hba.conf -c ssl=on -c ssl_cert_file='/var/lib/postgresql/cert.pem' -c ssl_key_file='/var/lib/postgresql/key.pem' -c listen_addresses='*'

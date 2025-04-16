@@ -1,0 +1,10 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always"
+  },
+  "cSpell.words": [
+    "timestamptz"
+  ],
+  "material-icon-theme.activeIconPack": "nest",
+}
