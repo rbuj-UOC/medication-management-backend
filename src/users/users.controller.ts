@@ -14,17 +14,21 @@ import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { User } from './entities/users.entity';
 import { UsersService } from './users.service';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/role.enum';
 
 @Controller('user')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('getAll')
+  @Auth(Role.Admin)
   async getAll() {
     return await this.usersService.getAll();
   }
 
   @Get('getOne/:id')
+  @Auth(Role.Admin)
   async getOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
     return await this.usersService.getOne(id);
   }
@@ -50,6 +54,7 @@ export class UsersController {
   }
 
   @Put('update/:id')
+  @Auth(Role.User)
   async updateUser(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateUserDTO,
@@ -59,6 +64,7 @@ export class UsersController {
   }
 
   @Delete('delete/:id')
+  @Auth(Role.User)
   async deleteUser(@Param('id', ParseUUIDPipe) id: string) {
     await this.usersService.deleteUser(id);
     return 'User deleted successfully';
