@@ -1,24 +1,73 @@
-import { Injectable } from '@nestjs/common';
-
-// This should be a real class/interface representing a user entity
-export type User = any;
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateUserDTO } from './dto/create-user.dto';
+import { UpdateUserDTO } from './dto/update-user.dto';
+import { User } from './entities/users.entity';
 
 @Injectable()
 export class UsersService {
-  private readonly users = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-    },
-  ];
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
 
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find(user => user.username === username);
+  async getAll() {
+    return await this.userRepository.find();
+  }
+
+  async getOne(id: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
+  }
+
+  async getOneByUsername(username: string) {
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (!user) {
+      throw new NotFoundException(`User with username ${username} not found`);
+    }
+    return user;
+  }
+
+  async getOneByEmail(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'username', 'email', 'password', 'role'],
+    });
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+    return user;
+  }
+
+  async addUser(userData: CreateUserDTO) {
+    const { email, username, password, role } = userData;
+    const user = this.userRepository.create({
+      email,
+      username,
+      password,
+      role,
+    });
+    return await this.userRepository.save(user);
+  }
+
+  async updateUser(id: string, updateData: UpdateUserDTO) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    this.userRepository.merge(user, updateData);
+    return await this.userRepository.save(user);
+  }
+
+  async deleteUser(id: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return await this.userRepository.remove(user);
   }
 }
