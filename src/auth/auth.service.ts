@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 
@@ -16,7 +16,7 @@ export class AuthService {
       if (matchPasswords) {
         const { password, ...result } = user;
         return result;
-      }  
+      }
     }
     return null;
   }

@@ -5,7 +5,7 @@ import {
   BeforeUpdate,
   Column,
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 
 @Entity({ name: 'users' })

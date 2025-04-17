@@ -9,17 +9,17 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/role.enum';
 import { QueryFailedError } from 'typeorm';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { User } from './entities/users.entity';
 import { UsersService } from './users.service';
-import { Auth } from 'src/auth/decorators/auth.decorator';
-import { Role } from 'src/common/enums/role.enum';
 
 @Controller('user')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private usersService: UsersService) { }
 
   @Get('getAll')
   @Auth(Role.Admin)
