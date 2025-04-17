@@ -1,4 +1,15 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { QueryFailedError } from 'typeorm';
@@ -9,7 +20,7 @@ import { MedicationsService } from './medications.service';
 
 @Controller('medication')
 export class MedicationsController {
-  constructor(private medicationsService: MedicationsService) { }
+  constructor(private medicationsService: MedicationsService) {}
 
   @Get('getAll')
   @Auth(Role.Admin)
@@ -25,7 +36,9 @@ export class MedicationsController {
 
   @Get('getByUserId/:userId')
   @Auth(Role.User)
-  async getByUserId(@Param('userId', ParseUUIDPipe) userId: string): Promise<Medication[]> {
+  async getByUserId(
+    @Param('userId', ParseUUIDPipe) userId: string,
+  ): Promise<Medication[]> {
     return await this.medicationsService.getByUserId(userId);
   }
 

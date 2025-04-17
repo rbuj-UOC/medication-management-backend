@@ -28,7 +28,7 @@ export class User {
   role: string;
 
   @OneToMany(() => Medication, (medication) => medication.user)
-  medications: Medication[]
+  medications: Medication[];
 
   @BeforeInsert()
   @BeforeUpdate()
@@ -37,7 +37,7 @@ export class User {
     this.password = await bcrypt.hash(this.password, salt);
   }
 
-  async validatePassword(password: string): Promise<boolean> {
-    return bcrypt.compareSync(password, this.password);
+  validatePassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
   }
 }

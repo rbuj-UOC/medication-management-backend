@@ -12,14 +12,16 @@ export class MedicationsService {
     @InjectRepository(Medication)
     private medicationRepository: Repository<Medication>,
     private readonly usersService: UsersService,
-  ) { }
+  ) {}
 
   async getAll() {
     return await this.medicationRepository.find();
   }
 
   async getOne(id: number): Promise<Medication> {
-    const medication = await this.medicationRepository.findOne({ where: { id } });
+    const medication = await this.medicationRepository.findOne({
+      where: { id },
+    });
     if (!medication) {
       throw new NotFoundException(`Medication with ID ${id} not found`);
     }
@@ -34,21 +36,21 @@ export class MedicationsService {
 
   async addMedication(creationData: CreateMedicationDTO) {
     const { name } = creationData;
-    const user = await this.usersService.getOne(
-      creationData.userId,
-    );
+    const user = await this.usersService.getOne(creationData.userId);
     if (!user) {
       return 'User not found';
     }
     const medication = this.medicationRepository.create({
       name,
-      user
+      user,
     });
     return await this.medicationRepository.save(medication);
   }
 
   async updateMedication(id: number, updateData: UpdateMedicationDTO) {
-    const medication = await this.medicationRepository.findOne({ where: { id } });
+    const medication = await this.medicationRepository.findOne({
+      where: { id },
+    });
     if (!medication) {
       throw new NotFoundException(`Medication with ID ${id} not found`);
     }
@@ -57,7 +59,9 @@ export class MedicationsService {
   }
 
   async deleteMedication(id: number) {
-    const medication = await this.medicationRepository.findOne({ where: { id } });
+    const medication = await this.medicationRepository.findOne({
+      where: { id },
+    });
     if (!medication) {
       throw new NotFoundException(`Medication with ID ${id} not found`);
     }

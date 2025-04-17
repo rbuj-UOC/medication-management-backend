@@ -9,8 +9,14 @@ import { MedicationsModule } from './medications/medications.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), TypeOrmModule.forRoot(databaseConfig()), AuthModule, UsersModule, MedicationsModule],
+  imports: [
+    ConfigModule.forRoot(),
+    TypeOrmModule.forRoot(databaseConfig()),
+    AuthModule,
+    UsersModule,
+    MedicationsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

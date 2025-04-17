@@ -16,5 +16,5 @@ export class CreateUserDTO {
 
   @IsEnum(Role)
   @IsNotEmpty({ message: 'Please define a role' })
-  role: Role
+  role: Role;
 }
