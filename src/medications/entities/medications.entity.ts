@@ -6,9 +6,9 @@ export class Medication {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { unique: true, nullable: false })
+  @Column('varchar', { unique: false, nullable: false })
   name: string;
 
-  @ManyToOne(() => User, (user) => user.medications)
+  @ManyToOne(() => User, (user) => user.medications, { onDelete: 'CASCADE' })
   user: User;
 }
