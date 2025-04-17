@@ -14,8 +14,33 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"var bodyAuth = JSON.parse(pm.response.text())",
-							"pm.environment.set(\"access_token\",bodyAuth.access_token);",
+							"var jsonData = pm.response.json();",
+							"pm.environment.set('access_token', jsonData.access_token);",
+							"",
+							"function parseJwt (token,part) {",
+							"   var base64Url = token.split('.')[part];",
+							"   var words = CryptoJS.enc.Base64.parse(base64Url);",
+							"   var jsonPayload = CryptoJS.enc.Utf8.stringify(words);",
+							"   return  JSON.parse(jsonPayload);",
+							"};",
+							"",
+							"var jwtInfo ={};",
+							"jwtInfo.size = jsonData.access_token.length;",
+							"jwtInfo.header = parseJwt(jsonData.access_token,0);",
+							"jwtInfo.payload = parseJwt(jsonData.access_token,1);",
+							"jwtInfo.signature = jsonData.access_token.split('.')[2];",
+							"jwtInfo.expires = ((jwtInfo.payload.exp-Date.now().valueOf()/1000)/60).toFixed(1);",
+							"",
+							"pm.environment.set('user_id', jwtInfo.payload.sub);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
 							""
 						],
 						"type": "text/javascript",
@@ -87,6 +112,208 @@
 			"response": []
 		},
 		{
+			"name": "medication/create",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Paracetamol 600mg\",\n    \"user\": \"{{user_id}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/medication/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"medication",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "medication/delete",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/medication/delete/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"medication",
+						"delete",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "medication/getAll",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/medication/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"medication",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "medication/getByUserId",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/medication/getByUserId/{{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"medication",
+						"getByUserId",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "medication/getOne",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/medication/getOne/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"medication",
+						"getOne",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "medication/update",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Paracetamol 1g\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/medication/update/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"medication",
+						"update",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "user/create",
 			"request": {
 				"method": "POST",
@@ -131,7 +358,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/user/delete/35fe7b93-2af3-433f-bd11-6bc7307420cf",
+					"raw": "http://localhost:3000/user/delete/{{user_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -140,7 +367,7 @@
 					"path": [
 						"user",
 						"delete",
-						"35fe7b93-2af3-433f-bd11-6bc7307420cf"
+						"{{user_id}}"
 					]
 				}
 			},
@@ -192,7 +419,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/user/getOne/fc9e14cd-2b13-416e-8944-d0bb4db6ad07",
+					"raw": "http://localhost:3000/user/getOne/{{user_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -201,7 +428,7 @@
 					"path": [
 						"user",
 						"getOne",
-						"fc9e14cd-2b13-416e-8944-d0bb4db6ad07"
+						"{{user_id}}"
 					]
 				}
 			},
@@ -232,7 +459,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/user/update/fc9e14cd-2b13-416e-8944-d0bb4db6ad07",
+					"raw": "http://localhost:3000/user/update/{{user_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -241,7 +468,7 @@
 					"path": [
 						"user",
 						"update",
-						"fc9e14cd-2b13-416e-8944-d0bb4db6ad07"
+						"{{user_id}}"
 					]
 				}
 			},

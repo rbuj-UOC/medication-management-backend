@@ -1,5 +1,4 @@
-import { IsString } from '@nestjs/class-validator';
-import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString } from '@nestjs/class-validator';
 import { Role } from 'src/common/enums/role.enum';
 
 export class CreateUserDTO {

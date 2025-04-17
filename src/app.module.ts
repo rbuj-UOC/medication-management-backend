@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import databaseConfig from './config/database.config';
+import { MedicationsModule } from './medications/medications.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), TypeOrmModule.forRoot(databaseConfig()), AuthModule, UsersModule],
+  imports: [ConfigModule.forRoot(), TypeOrmModule.forRoot(databaseConfig()), AuthModule, UsersModule, MedicationsModule],
   controllers: [AppController],
   providers: [AppService],
 })

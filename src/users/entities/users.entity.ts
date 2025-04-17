@@ -1,11 +1,13 @@
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/enums/role.enum';
+import { Medication } from 'src/medications/entities/medications.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   Entity,
-  PrimaryGeneratedColumn
+  OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -24,6 +26,9 @@ export class User {
 
   @Column({ type: 'enum', enum: Role, default: Role.User })
   role: string;
+
+  @OneToMany(() => Medication, (medication) => medication.user)
+  medications: Medication[]
 
   @BeforeInsert()
   @BeforeUpdate()
