@@ -20,8 +20,8 @@ export class CreateUserDTO {
   surname_2: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Please define a user name' })
-  username: string;
+  @IsNotEmpty({ message: 'Please define an alias' })
+  alias: string;
 
   @IsDate()
   @IsNotEmpty({ message: 'Please define a birth date' })

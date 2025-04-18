@@ -8,7 +8,7 @@
 	},
 	"item": [
 		{
-			"name": "auth/login",
+			"name": "auth",
 			"event": [
 				{
 					"listen": "test",
@@ -16,22 +16,8 @@
 						"exec": [
 							"var jsonData = pm.response.json();",
 							"pm.environment.set('access_token', jsonData.access_token);",
-							"",
-							"function parseJwt (token,part) {",
-							"   var base64Url = token.split('.')[part];",
-							"   var words = CryptoJS.enc.Base64.parse(base64Url);",
-							"   var jsonPayload = CryptoJS.enc.Utf8.stringify(words);",
-							"   return  JSON.parse(jsonPayload);",
-							"};",
-							"",
-							"var jwtInfo ={};",
-							"jwtInfo.size = jsonData.access_token.length;",
-							"jwtInfo.header = parseJwt(jsonData.access_token,0);",
-							"jwtInfo.payload = parseJwt(jsonData.access_token,1);",
-							"jwtInfo.signature = jsonData.access_token.split('.')[2];",
-							"jwtInfo.expires = ((jwtInfo.payload.exp-Date.now().valueOf()/1000)/60).toFixed(1);",
-							"",
-							"pm.environment.set('user_id', jwtInfo.payload.sub);"
+							"pm.environment.set('user_id', jsonData.user_id);",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -67,22 +53,21 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/auth/login",
+					"raw": "http://localhost:3000/auth",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"auth",
-						"login"
+						"auth"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "auth/profile",
+			"name": "auth",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -97,15 +82,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/auth/profile",
+					"raw": "http://localhost:3000/auth",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"auth",
-						"profile"
+						"auth"
 					]
 				}
 			},
@@ -454,13 +438,27 @@
 			"response": []
 		},
 		{
-			"name": "user/create",
+			"name": "users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set('user_id', jsonData.id);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\": \"test\",\n    \"email\": \"test@test.org\",\n    \"password\": \"testtest\",\n    \"role\": \"user\"\n}",
+					"raw": "{\n    \"name\": \"Robert\",\n    \"surname_1\": \"Buj\",\n    \"alias\": \"rbuj\",\n    \"birth_date\": \"11/11/1960\",\n    \"email\": \"test@test.org\",\n    \"password\": \"testtest\",\n    \"role\": \"user\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -468,53 +466,21 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/user/create",
+					"raw": "http://localhost:3000/users",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"user",
-						"create"
+						"users"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "user/delete",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/user/delete/{{user_id}}",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"user",
-						"delete",
-						"{{user_id}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "user/getAll",
+			"name": "users",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -529,22 +495,21 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/user/getAll",
+					"raw": "http://localhost:3000/users",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"user",
-						"getAll"
+						"users"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "user/getOne",
+			"name": "users/:id",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -559,15 +524,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/user/getOne/{{user_id}}",
+					"raw": "http://localhost:3000/users/{{user_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"user",
-						"getOne",
+						"users",
 						"{{user_id}}"
 					]
 				}
@@ -575,7 +539,7 @@
 			"response": []
 		},
 		{
-			"name": "user/update",
+			"name": "users/:id",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -599,15 +563,44 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/user/update/{{user_id}}",
+					"raw": "http://localhost:3000/users/{{user_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"user",
-						"update",
+						"users",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/users/{{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
 						"{{user_id}}"
 					]
 				}

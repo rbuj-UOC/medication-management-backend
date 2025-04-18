@@ -8,13 +8,13 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
-  @Post('login')
+  @Post()
   async login(@Request() req) {
     return this.authService.login(req.user);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
+  @Get()
   getProfile(@Request() req) {
     return req.user;
   }

@@ -17,26 +17,28 @@ import { UpdateUserDTO } from './dto/update-user.dto';
 import { User } from './entities/users.entity';
 import { UsersService } from './users.service';
 
-@Controller('user')
+@Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Get('getAll')
+  @Get('')
   @Auth(Role.Admin)
   async getAll() {
     return await this.usersService.getAll();
   }
 
-  @Get('getOne/:id')
-  @Auth(Role.Admin)
+  @Get(':id')
+  @Auth(Role.User)
   async getOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
     return await this.usersService.getOne(id);
   }
 
-  @Post('create')
-  async addUser(@Body() userData: CreateUserDTO) {
+  @Post()
+  async addUser(@Body() userData: CreateUserDTO): Promise<User> {
     try {
-      await this.usersService.addUser(userData);
+      const user = await this.usersService.addUser(userData);
+      user.password = undefined; // Remove password from the response
+      return user;
     } catch (e) {
       let message = 'User could not be created';
       if (
@@ -50,23 +52,24 @@ export class UsersController {
       }
       throw new BadRequestException(message);
     }
-    return 'User created successfully';
   }
 
-  @Put('update/:id')
+  @Put(':id')
   @Auth(Role.User)
   async updateUser(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateUserDTO,
   ) {
-    await this.usersService.updateUser(id, updateData);
-    return 'User updated successfully';
+    const user = await this.usersService.updateUser(id, updateData);
+    user.password = undefined; // Remove password from the response
+    return user;
   }
 
-  @Delete('delete/:id')
+  @Delete(':id')
   @Auth(Role.User)
   async deleteUser(@Param('id', ParseUUIDPipe) id: string) {
-    await this.usersService.deleteUser(id);
-    return 'User deleted successfully';
+    const user = await this.usersService.deleteUser(id);
+    user.password = undefined; // Remove password from the response
+    return user;
   }
 }

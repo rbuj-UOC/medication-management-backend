@@ -30,9 +30,9 @@ export class User {
   @Length(3, 25)
   surname_2: string;
 
-  @Column('varchar', { unique: true, length: 25, nullable: false })
+  @Column('varchar', { length: 25, nullable: false })
   @Length(3, 25)
-  username: string;
+  alias: string;
 
   @UpdateDateColumn({ type: 'timestamptz', nullable: false })
   birth_date: Date;
@@ -40,8 +40,7 @@ export class User {
   @Column('varchar', { unique: true, length: 255, nullable: false })
   email: string;
 
-  @Column('varchar', { length: 40, select: false, nullable: false })
-  @Length(8, 40)
+  @Column('varchar', { select: false, nullable: false })
   password: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.User })

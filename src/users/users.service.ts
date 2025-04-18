@@ -24,10 +24,10 @@ export class UsersService {
     return user;
   }
 
-  async getOneByUsername(username: string) {
-    const user = await this.userRepository.findOne({ where: { username } });
+  async getOneByUsername(alias: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { alias } });
     if (!user) {
-      throw new NotFoundException(`User with username ${username} not found`);
+      throw new NotFoundException(`User with username ${alias} not found`);
     }
     return user;
   }
@@ -35,7 +35,7 @@ export class UsersService {
   async getOneByEmail(email: string) {
     const user = await this.userRepository.findOne({
       where: { email },
-      select: ['id', 'username', 'email', 'password', 'role'],
+      select: ['id', 'alias', 'email', 'password', 'role'],
     });
     if (!user) {
       throw new NotFoundException(`User with email ${email} not found`);
@@ -43,31 +43,12 @@ export class UsersService {
     return user;
   }
 
-  async addUser(userData: CreateUserDTO) {
-    const {
-      name,
-      surname_1,
-      surname_2,
-      username,
-      birth_date,
-      email,
-      password,
-      role,
-    } = userData;
-    const user = this.userRepository.create({
-      name,
-      surname_1,
-      surname_2,
-      username,
-      birth_date,
-      email,
-      password,
-      role,
-    });
+  async addUser(userData: CreateUserDTO): Promise<User> {
+    const user = this.userRepository.create(userData);
     return await this.userRepository.save(user);
   }
 
-  async updateUser(id: string, updateData: UpdateUserDTO) {
+  async updateUser(id: string, updateData: UpdateUserDTO): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
