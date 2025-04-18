@@ -9,6 +9,7 @@ import { IntervalsModule } from './intervals/intervals.module';
 import { MedicationsModule } from './medications/medications.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { UsersModule } from './users/users.module';
+import { VerificationsModule } from './verifications/verifications.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UsersModule } from './users/users.module';
     MedicationsModule,
     IntervalsModule,
     SchedulesModule,
+    VerificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
