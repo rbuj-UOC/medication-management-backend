@@ -17,16 +17,16 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('varchar', { unique: true, nullable: false })
+  @Column('varchar', { unique: true, length: 255, nullable: false })
   username: string;
 
-  @Column('varchar', { unique: true, nullable: false })
+  @Column('varchar', { unique: true, length: 255, nullable: false })
   email: string;
 
-  @Column('varchar', { nullable: false, select: false })
+  @Column('varchar', { length: 40, select: false, nullable: false })
   password: string;
 
-  @Column({ type: 'enum', enum: Role, default: Role.User })
+  @Column({ type: 'enum', enum: Role, length: 10, default: Role.User })
   role: string;
 
   @OneToMany(() => Medication, (medication) => medication.user)

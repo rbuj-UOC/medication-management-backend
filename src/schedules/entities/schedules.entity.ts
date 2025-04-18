@@ -19,7 +19,7 @@ export class Schedule {
   @Column({ type: 'timestamptz', nullable: true })
   end_date: Date;
 
-  @Column({ nullable: false })
+  @Column('varchar', { length: 40, nullable: false })
   cron_expression: string;
 
   @Column('varchar', { nullable: false })

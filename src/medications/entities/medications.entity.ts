@@ -15,7 +15,7 @@ export class Medication {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { unique: false, nullable: false })
+  @Column('varchar', { unique: false, length: 255, nullable: false })
   name: string;
 
   @OneToMany(() => Schedule, (schedule) => schedule.medication)
