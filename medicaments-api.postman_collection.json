@@ -128,7 +128,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Paracetamol 600mg\",\n    \"user\": \"{{user_id}}\"\n}",
+					"raw": "{\n    \"name\": \"Paracetamol 600mg\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -206,37 +206,6 @@
 					"path": [
 						"medication",
 						"getAll"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "medication/getByUserId",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/medication/getByUserId/{{user_id}}",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"medication",
-						"getByUserId",
-						"{{user_id}}"
 					]
 				}
 			},
@@ -330,7 +299,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"start_date\": \"2025-02-16T18:30:00.000Z\",\n    \"cron_expression\": \"45 12 * * *\",\n    \"medicationID\": \"1\",\n    \"disabled\": \"False\"\n}",
+					"raw": "{\n    \"cron_expression\": \"45 12 * * *\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -414,37 +383,6 @@
 			"response": []
 		},
 		{
-			"name": "schedule/getByUserId",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/schedule/getByUserId/{{user_id}}",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"schedule",
-						"getByUserId",
-						"{{user_id}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "schedule/getOne",
 			"request": {
 				"auth": {
@@ -492,7 +430,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"disabled\": \"True\"\n}",
+					"raw": "{\n    \"name\": \"Paracetamol 1g\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

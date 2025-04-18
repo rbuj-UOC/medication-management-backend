@@ -1,13 +1,9 @@
-import { Schedule } from 'src/schedules/entities/schedules.entity';
-import { User } from 'src/users/entities/users.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
 
 @Entity({ name: 'medications' })
@@ -17,12 +13,6 @@ export class Medication {
 
   @Column('varchar', { unique: false, length: 255, nullable: false })
   name: string;
-
-  @OneToMany(() => Schedule, (schedule) => schedule.medication)
-  schedules: Schedule[];
-
-  @ManyToOne(() => User, (user) => user.medications, { onDelete: 'CASCADE' })
-  user: User;
 
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MedicationsService } from 'src/medications/medications.service';
 import { Repository } from 'typeorm';
 import { CreateScheduleDTO } from './dto/create-schedule.dto';
 import { UpdateScheduleDTO } from './dto/update-schedule.dto';
@@ -11,26 +10,16 @@ export class SchedulesService {
   constructor(
     @InjectRepository(Schedule)
     private scheduleRepository: Repository<Schedule>,
-    private readonly medicationsService: MedicationsService,
-  ) {}
+  ) { }
 
   async getAll() {
     return await this.scheduleRepository.find();
   }
 
   async addSchedule(scheduleData: CreateScheduleDTO) {
-    const { start_date, cron_expression, disabled } = scheduleData;
-    const medication = await this.medicationsService.getOne(
-      scheduleData.medicationId,
-    );
-    if (!medication) {
-      return 'Medication not found';
-    }
+    const { cron_expression } = scheduleData;
     const schedule = this.scheduleRepository.create({
-      start_date,
       cron_expression,
-      disabled,
-      medication,
     });
     return await this.scheduleRepository.save(schedule);
   }

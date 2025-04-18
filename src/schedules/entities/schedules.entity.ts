@@ -1,11 +1,9 @@
-import { Medication } from 'src/medications/entities/medications.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
 
 @Entity({ name: 'schedules' })
@@ -13,22 +11,8 @@ export class Schedule {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'timestamptz', nullable: false })
-  start_date: Date;
-
-  @Column({ type: 'timestamptz', nullable: true })
-  end_date: Date;
-
   @Column('varchar', { length: 40, nullable: false })
   cron_expression: string;
-
-  @Column('varchar', { nullable: false })
-  disabled: boolean;
-
-  @ManyToOne(() => Medication, (medication) => medication.schedules, {
-    onDelete: 'CASCADE',
-  })
-  medication: Medication;
 
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;

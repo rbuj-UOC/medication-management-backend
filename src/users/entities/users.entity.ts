@@ -1,15 +1,13 @@
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/enums/role.enum';
-import { Medication } from 'src/medications/entities/medications.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -26,11 +24,8 @@ export class User {
   @Column('varchar', { length: 40, select: false, nullable: false })
   password: string;
 
-  @Column({ type: 'enum', enum: Role, length: 10, default: Role.User })
+  @Column({ type: 'enum', enum: Role, default: Role.User })
   role: string;
-
-  @OneToMany(() => Medication, (medication) => medication.user)
-  medications: Medication[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;

@@ -6,9 +6,8 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  ParseUUIDPipe,
   Post,
-  Put,
+  Put
 } from '@nestjs/common';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/common/enums/role.enum';
@@ -20,7 +19,7 @@ import { MedicationsService } from './medications.service';
 
 @Controller('medication')
 export class MedicationsController {
-  constructor(private medicationsService: MedicationsService) {}
+  constructor(private medicationsService: MedicationsService) { }
 
   @Get('getAll')
   @Auth(Role.Admin)
@@ -32,14 +31,6 @@ export class MedicationsController {
   @Auth(Role.User)
   async getOne(@Param('id', ParseIntPipe) id: number): Promise<Medication> {
     return await this.medicationsService.getOne(id);
-  }
-
-  @Get('getByUserId/:userId')
-  @Auth(Role.User)
-  async getByUserId(
-    @Param('userId', ParseUUIDPipe) userId: string,
-  ): Promise<Medication[]> {
-    return await this.medicationsService.getByUserId(userId);
   }
 
   @Post('create')
