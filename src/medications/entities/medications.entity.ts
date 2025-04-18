@@ -1,7 +1,9 @@
+import { UserMedicationSchedule } from 'src/users_medications_schedules/entities/users_medications_schedules.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
@@ -19,4 +21,7 @@ export class Medication {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updated_at: Date;
+
+  @OneToMany(() => UserMedicationSchedule, userMedicationSchedule => userMedicationSchedule.medication)
+  public ums: UserMedicationSchedule[];
 }

@@ -1,11 +1,13 @@
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/enums/role.enum';
+import { UserMedicationSchedule } from 'src/users_medications_schedules/entities/users_medications_schedules.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
@@ -43,4 +45,7 @@ export class User {
   validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
   }
+
+  @OneToMany(() => UserMedicationSchedule, userMedicationSchedule => userMedicationSchedule.user)
+  public ums: UserMedicationSchedule[];
 }
