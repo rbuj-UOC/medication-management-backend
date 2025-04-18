@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/enums/role.enum';
-import { UserMedicationSchedule } from 'src/users_medications_schedules/entities/users_medications_schedules.entity';
+import { Schedule } from 'src/schedules/entities/schedules.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -12,7 +12,7 @@ import {
   UpdateDateColumn
 } from 'typeorm';
 
-@Entity({ name: 'users' })
+@Entity({ name: 'user' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -46,6 +46,6 @@ export class User {
     return bcrypt.compare(password, this.password);
   }
 
-  @OneToMany(() => UserMedicationSchedule, userMedicationSchedule => userMedicationSchedule.user)
-  public ums: UserMedicationSchedule[];
+  @OneToMany(() => Schedule, schedule => schedule.user)
+  public schedules: Schedule[];
 }

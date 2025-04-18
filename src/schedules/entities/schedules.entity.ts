@@ -1,20 +1,27 @@
-import { UserMedicationSchedule } from 'src/users_medications_schedules/entities/users_medications_schedules.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from 'typeorm';
+import { Interval } from "src/intervals/entities/intervals.entity";
+import { Medication } from "src/medications/entities/medications.entity";
+import { User } from "src/users/entities/users.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
-@Entity({ name: 'schedules' })
+@Entity({ name: 'schedule' })
 export class Schedule {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  user_id: string;
 
-  @Column('varchar', { length: 40, nullable: false })
-  cron_expression: string;
+  @PrimaryColumn()
+  medication_id: number;
+
+  @PrimaryColumn()
+  interval_id: number;
+
+  @Column({ type: 'timestamptz', nullable: false })
+  start_date: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  end_date: Date;
+
+  @Column({ default: false })
+  disabled: boolean;
 
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;
@@ -22,6 +29,15 @@ export class Schedule {
   @UpdateDateColumn({ type: 'timestamptz' })
   updated_at: Date;
 
-  @OneToMany(() => UserMedicationSchedule, userMedicationSchedule => userMedicationSchedule.schedule)
-  public ums: UserMedicationSchedule[];
+  @ManyToOne(() => User, (user) => user.schedules)
+  @JoinColumn({ name: "user_id" })
+  public user: User
+
+  @ManyToOne(() => Medication, (medication) => medication.schedules)
+  @JoinColumn({ name: "medication_id" })
+  public medication: Medication
+
+  @ManyToOne(() => Interval, (interval) => interval.schedules)
+  @JoinColumn({ name: "interval_id" })
+  public interval: Interval
 }

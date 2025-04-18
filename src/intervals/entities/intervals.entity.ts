@@ -8,13 +8,13 @@ import {
   UpdateDateColumn
 } from 'typeorm';
 
-@Entity({ name: 'medication' })
-export class Medication {
+@Entity({ name: 'interval' })
+export class Interval {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { unique: false, length: 255, nullable: false })
-  name: string;
+  @Column('varchar', { length: 40, nullable: false })
+  cron_expression: string;
 
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;
@@ -22,6 +22,6 @@ export class Medication {
   @UpdateDateColumn({ type: 'timestamptz' })
   updated_at: Date;
 
-  @OneToMany(() => Schedule, schedule => schedule.medication)
+  @OneToMany(() => Schedule, schedule => schedule.interval)
   public schedules: Schedule[];
 }
