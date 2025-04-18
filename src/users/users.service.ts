@@ -44,10 +44,23 @@ export class UsersService {
   }
 
   async addUser(userData: CreateUserDTO) {
-    const { email, username, password, role } = userData;
-    const user = this.userRepository.create({
-      email,
+    const {
+      name,
+      surname_1,
+      surname_2,
       username,
+      birth_date,
+      email,
+      password,
+      role,
+    } = userData;
+    const user = this.userRepository.create({
+      name,
+      surname_1,
+      surname_2,
+      username,
+      birth_date,
+      email,
       password,
       role,
     });

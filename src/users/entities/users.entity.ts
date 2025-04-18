@@ -1,3 +1,4 @@
+import { Length } from '@nestjs/class-validator';
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/enums/role.enum';
 import { Schedule } from 'src/schedules/entities/schedules.entity';
@@ -9,7 +10,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity({ name: 'user' })
@@ -17,13 +18,30 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('varchar', { unique: true, length: 255, nullable: false })
+  @Column('varchar', { length: 25, nullable: false })
+  @Length(3, 25)
+  name: string;
+
+  @Column('varchar', { length: 25, nullable: false })
+  @Length(3, 25)
+  surname_1: string;
+
+  @Column('varchar', { length: 25, nullable: true })
+  @Length(3, 25)
+  surname_2: string;
+
+  @Column('varchar', { unique: true, length: 25, nullable: false })
+  @Length(3, 25)
   username: string;
+
+  @UpdateDateColumn({ type: 'timestamptz', nullable: false })
+  birth_date: Date;
 
   @Column('varchar', { unique: true, length: 255, nullable: false })
   email: string;
 
   @Column('varchar', { length: 40, select: false, nullable: false })
+  @Length(8, 40)
   password: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.User })
@@ -46,6 +64,6 @@ export class User {
     return bcrypt.compare(password, this.password);
   }
 
-  @OneToMany(() => Schedule, schedule => schedule.user)
+  @OneToMany(() => Schedule, (schedule) => schedule.user)
   public schedules: Schedule[];
 }
