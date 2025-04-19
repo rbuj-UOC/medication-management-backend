@@ -57,7 +57,7 @@ export class UsersController {
   }
 
   @Put(':id')
-  @Auth(Role.User)
+  @UseGuards(JwtAuthGuard)
   async updateUser(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateUserDTO,
@@ -68,7 +68,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @Auth(Role.User)
+  @UseGuards(JwtAuthGuard)
   async deleteUser(@Param('id', ParseUUIDPipe) id: string) {
     const user = await this.usersService.deleteUser(id);
     user.password = undefined; // Remove password from the response
