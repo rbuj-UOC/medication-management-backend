@@ -5,7 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import databaseConfig from './config/database.config';
-import { IntervalsModule } from './intervals/intervals.module';
 import { MedicationsModule } from './medications/medications.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { UsersModule } from './users/users.module';
@@ -18,11 +17,10 @@ import { VerificationsModule } from './verifications/verifications.module';
     AuthModule,
     UsersModule,
     MedicationsModule,
-    IntervalsModule,
-    SchedulesModule,
     VerificationsModule,
+    SchedulesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

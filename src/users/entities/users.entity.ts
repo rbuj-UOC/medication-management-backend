@@ -1,7 +1,7 @@
 import { Length } from '@nestjs/class-validator';
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/enums/role.enum';
-import { Schedule } from 'src/schedules/entities/schedules.entity';
+import { Medication } from 'src/medications/entities/medications.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -63,6 +63,6 @@ export class User {
     return bcrypt.compare(password, this.password);
   }
 
-  @OneToMany(() => Schedule, (schedule) => schedule.user)
-  public schedules: Schedule[];
+  @OneToMany(() => Medication, (medication) => medication.user)
+  medications: Medication[];
 }

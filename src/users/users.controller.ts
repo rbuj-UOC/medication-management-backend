@@ -10,9 +10,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { Auth } from 'src/auth/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { Role } from 'src/common/enums/role.enum';
 import { QueryFailedError } from 'typeorm';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
@@ -24,7 +22,7 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('')
-  @Auth(Role.Admin)
+  @UseGuards(JwtAuthGuard)
   async getAll() {
     return await this.usersService.getAll();
   }

@@ -6,10 +6,13 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  ParseUUIDPipe,
   Post,
-  Put
+  Put,
+  UseGuards,
 } from '@nestjs/common';
 import { Auth } from 'src/auth/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Role } from 'src/common/enums/role.enum';
 import { QueryFailedError } from 'typeorm';
 import { CreateMedicationDTO } from './dto/create-medication.dto';
@@ -17,26 +20,36 @@ import { UpdateMedicationDTO } from './dto/update-medication.dto';
 import { Medication } from './entities/medications.entity';
 import { MedicationsService } from './medications.service';
 
-@Controller('medication')
+@Controller('medications')
 export class MedicationsController {
-  constructor(private medicationsService: MedicationsService) { }
+  constructor(private medicationsService: MedicationsService) {}
 
-  @Get('getAll')
-  @Auth(Role.Admin)
-  async getAll() {
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async getAll(): Promise<Medication[]> {
     return await this.medicationsService.getAll();
   }
 
-  @Get('getOne/:id')
+  @Get('medication/:id')
   @Auth(Role.User)
   async getOne(@Param('id', ParseIntPipe) id: number): Promise<Medication> {
     return await this.medicationsService.getOne(id);
   }
 
-  @Post('create')
-  async addMedication(@Body() creationData: CreateMedicationDTO) {
+  @Get('user/:id')
+  @Auth(Role.User)
+  async getByUserId(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<Medication[]> {
+    return await this.medicationsService.getByUserId(id);
+  }
+
+  @Post()
+  async addMedication(
+    @Body() creationData: CreateMedicationDTO,
+  ): Promise<Medication> {
     try {
-      await this.medicationsService.addMedication(creationData);
+      return await this.medicationsService.addMedication(creationData);
     } catch (e) {
       let message = 'Medication could not be created';
       if (
@@ -50,23 +63,22 @@ export class MedicationsController {
       }
       throw new BadRequestException(message);
     }
-    return 'Medication created successfully';
   }
 
-  @Put('update/:id')
+  @Put(':id')
   @Auth(Role.User)
   async updateMedication(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateData: UpdateMedicationDTO,
-  ) {
-    await this.medicationsService.updateMedication(id, updateData);
-    return 'Medication updated successfully';
+  ): Promise<Medication> {
+    return await this.medicationsService.updateMedication(id, updateData);
   }
 
-  @Delete('delete/:id')
+  @Delete(':id')
   @Auth(Role.User)
-  async deleteMedication(@Param('id', ParseIntPipe) id: number) {
-    await this.medicationsService.deleteMedication(id);
-    return 'Medication deleted successfully';
+  async deleteMedication(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Medication> {
+    return await this.medicationsService.deleteMedication(id);
   }
 }

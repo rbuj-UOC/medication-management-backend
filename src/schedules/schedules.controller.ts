@@ -1,4 +1,86 @@
-import { Controller } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Role } from 'src/common/enums/role.enum';
+import { QueryFailedError } from 'typeorm';
+import { CreateScheduleDTO } from './dto/create-schedule.dto';
+import { UpdateScheduleDTO } from './dto/update-schedule.dto';
+import { Schedule } from './entities/schedules.entity';
+import { SchedulesService } from './schedules.service';
 
-@Controller('schedule')
-export class SchedulesController { }
+@Controller('schedules')
+export class SchedulesController {
+  constructor(private schedulesService: SchedulesService) {}
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async getAll(): Promise<Schedule[]> {
+    return await this.schedulesService.getAll();
+  }
+
+  @Get('medication/:id')
+  @Auth(Role.User)
+  async getByMedicationId(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Schedule[]> {
+    return await this.schedulesService.getByMedicationId(id);
+  }
+
+  @Get('schedule/:id')
+  @Auth(Role.User)
+  async getByScheduleId(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Schedule> {
+    return await this.schedulesService.getByScheduleId(id);
+  }
+
+  @Post()
+  @Auth(Role.User)
+  async addSchedule(
+    @Body() scheduleData: CreateScheduleDTO,
+  ): Promise<Schedule> {
+    try {
+      return await this.schedulesService.addSchedule(scheduleData);
+    } catch (e) {
+      let message = 'Schedule could not be created';
+      if (
+        e &&
+        e instanceof QueryFailedError &&
+        typeof e.driverError === 'object' &&
+        'detail' in e.driverError &&
+        typeof e.driverError.detail === 'string'
+      ) {
+        message = e.driverError.detail;
+      }
+      throw new BadRequestException(message);
+    }
+  }
+
+  @Put(':id')
+  @Auth(Role.User)
+  async updateSchedule(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateData: UpdateScheduleDTO,
+  ): Promise<Schedule> {
+    return await this.schedulesService.updateSchedule(id, updateData);
+  }
+
+  @Delete(':id')
+  @Auth(Role.User)
+  async deleteSchedule(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Schedule> {
+    return await this.schedulesService.deleteSchedule(id);
+  }
+}

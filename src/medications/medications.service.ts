@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { CreateMedicationDTO } from './dto/create-medication.dto';
 import { UpdateMedicationDTO } from './dto/update-medication.dto';
@@ -10,7 +11,8 @@ export class MedicationsService {
   constructor(
     @InjectRepository(Medication)
     private medicationRepository: Repository<Medication>,
-  ) { }
+    private readonly usersService: UsersService,
+  ) {}
 
   async getAll() {
     return await this.medicationRepository.find();
@@ -25,10 +27,24 @@ export class MedicationsService {
     }
     return medication;
   }
+
+  async getByUserId(userId: string): Promise<Medication[]> {
+    return this.medicationRepository.find({
+      where: { user: { id: userId } },
+    });
+  }
+
   async addMedication(creationData: CreateMedicationDTO) {
     const { name } = creationData;
+    const user = await this.usersService.getOne(creationData.userId);
+    if (!user) {
+      throw new NotFoundException(
+        `User not found ${creationData.userId} not found`,
+      );
+    }
     const medication = this.medicationRepository.create({
       name,
+      user,
     });
     return await this.medicationRepository.save(medication);
   }
