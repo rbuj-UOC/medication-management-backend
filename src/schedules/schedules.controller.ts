@@ -8,11 +8,11 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
 import { Auth } from 'src/auth/decorators/auth.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ActiveUser } from 'src/common/decorators/active-user.decorator';
 import { Role } from 'src/common/enums/role.enum';
+import { ActiveUserInterface } from 'src/common/interfaces/active-user.interface';
 import { QueryFailedError } from 'typeorm';
 import { CreateScheduleDTO } from './dto/create-schedule.dto';
 import { UpdateScheduleDTO } from './dto/update-schedule.dto';
@@ -24,7 +24,7 @@ export class SchedulesController {
   constructor(private schedulesService: SchedulesService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @Auth(Role.Admin)
   async getAll(): Promise<Schedule[]> {
     return await this.schedulesService.getAll();
   }
@@ -49,9 +49,13 @@ export class SchedulesController {
   @Auth(Role.User)
   async addSchedule(
     @Body() scheduleData: CreateScheduleDTO,
+    @ActiveUser() user: ActiveUserInterface,
   ): Promise<Schedule> {
     try {
-      return await this.schedulesService.addSchedule(scheduleData);
+      return await this.schedulesService.addSchedule(
+        scheduleData,
+        user.user_id,
+      );
     } catch (e) {
       let message = 'Schedule could not be created';
       if (

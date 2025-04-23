@@ -18,9 +18,10 @@ export class MedicationsService {
     return await this.medicationRepository.find();
   }
 
-  async getOne(id: number): Promise<Medication> {
+  async getOne(id: number, user_id: string): Promise<Medication> {
     const medication = await this.medicationRepository.findOne({
-      where: { id },
+      where: { id, user: { id: user_id } },
+      relations: ['user'],
     });
     if (!medication) {
       throw new NotFoundException(`Medication with ID ${id} not found`);
@@ -34,12 +35,15 @@ export class MedicationsService {
     });
   }
 
-  async addMedication(creationData: CreateMedicationDTO) {
+  async addMedication(creationData: CreateMedicationDTO, userId: string) {
     const { name } = creationData;
-    const user = await this.usersService.getOne(creationData.userId);
+    if (creationData.user_id !== userId) {
+      throw new NotFoundException(`UserIds aren't equal`);
+    }
+    const user = await this.usersService.getOne(creationData.user_id);
     if (!user) {
       throw new NotFoundException(
-        `User not found ${creationData.userId} not found`,
+        `User not found ${creationData.user_id} not found`,
       );
     }
     const medication = this.medicationRepository.create({
@@ -49,23 +53,35 @@ export class MedicationsService {
     return await this.medicationRepository.save(medication);
   }
 
-  async updateMedication(id: number, updateData: UpdateMedicationDTO) {
+  async updateMedication(
+    id: number,
+    updateData: UpdateMedicationDTO,
+    userId: string,
+  ) {
     const medication = await this.medicationRepository.findOne({
-      where: { id },
+      where: { id, user: { id: userId } },
+      relations: ['user'],
     });
     if (!medication) {
       throw new NotFoundException(`Medication with ID ${id} not found`);
+    }
+    if (medication.user.id !== userId) {
+      throw new NotFoundException(`UserIds aren't equal`);
     }
     this.medicationRepository.merge(medication, updateData);
     return await this.medicationRepository.save(medication);
   }
 
-  async deleteMedication(id: number) {
+  async deleteMedication(id: number, userId: string) {
     const medication = await this.medicationRepository.findOne({
-      where: { id },
+      where: { id, user: { id: userId } },
+      relations: ['user'],
     });
     if (!medication) {
       throw new NotFoundException(`Medication with ID ${id} not found`);
+    }
+    if (medication.user.id !== userId) {
+      throw new NotFoundException(`UserIds aren't equal`);
     }
     return await this.medicationRepository.remove(medication);
   }

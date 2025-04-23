@@ -10,7 +10,11 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ActiveUser } from 'src/common/decorators/active-user.decorator';
+import { Role } from 'src/common/enums/role.enum';
+import { ActiveUserInterface } from 'src/common/interfaces/active-user.interface';
 import { QueryFailedError } from 'typeorm';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
@@ -21,15 +25,21 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Get('')
-  @UseGuards(JwtAuthGuard)
+  @Get()
+  @Auth(Role.Admin)
   async getAll() {
     return await this.usersService.getAll();
   }
 
-  @Get(':id')
+  @Get('user')
   @UseGuards(JwtAuthGuard)
-  async getOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
+  async getOne(@ActiveUser() user: ActiveUserInterface): Promise<User> {
+    return await this.usersService.getOne(user.user_id);
+  }
+
+  @Get('user/:id')
+  @Auth(Role.Admin)
+  async getOneAdmin(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
     return await this.usersService.getOne(id);
   }
 
@@ -54,22 +64,50 @@ export class UsersController {
     }
   }
 
-  @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @Put()
+  @Auth(Role.User)
   async updateUser(
+    @ActiveUser() user: ActiveUserInterface,
+    @Body() updateData: UpdateUserDTO,
+  ) {
+    const updatedUser = await this.usersService.updateUser(
+      user.user_id,
+      updateData,
+    );
+    updatedUser.password = undefined; // Remove password from the response
+    return updatedUser;
+  }
+
+  @Put(':id')
+  @Auth(Role.Admin)
+  async updateUserAdmin(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateUserDTO,
   ) {
-    const user = await this.usersService.updateUser(id, updateData);
-    user.password = undefined; // Remove password from the response
-    return user;
+    const updatedUser = await this.usersService.updateUser(id, updateData);
+    updatedUser.password = undefined; // Remove password from the response
+    return updatedUser;
+  }
+
+  @Delete()
+  @Auth(Role.User)
+  async deleteUser(@ActiveUser() user: ActiveUserInterface) {
+    const deletedUser = await this.usersService.deleteUser(user.user_id);
+    deletedUser.password = undefined; // Remove password from the response
+    return deletedUser;
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  async deleteUser(@Param('id', ParseUUIDPipe) id: string) {
-    const user = await this.usersService.deleteUser(id);
-    user.password = undefined; // Remove password from the response
-    return user;
+  @Auth(Role.Admin)
+  async deleteUserAdmin(
+    @Param('id', ParseUUIDPipe) id: string,
+    @ActiveUser() user: ActiveUserInterface,
+  ) {
+    if (user.user_id === id && user.user_role === 'admin') {
+      throw new BadRequestException('You cannot delete your own admin account');
+    }
+    const deletedUser = await this.usersService.deleteUser(id);
+    deletedUser.password = undefined; // Remove password from the response
+    return deletedUser;
   }
 }

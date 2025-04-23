@@ -11,5 +11,5 @@ export class CreateMedicationDTO {
 
   @IsString()
   @IsNotEmpty({ message: 'Please define a UUID' })
-  userId: string;
+  user_id: string;
 }

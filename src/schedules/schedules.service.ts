@@ -30,11 +30,12 @@ export class SchedulesService {
     });
   }
 
-  async addSchedule(scheduleData: CreateScheduleDTO) {
+  async addSchedule(scheduleData: CreateScheduleDTO, userId: string) {
     const { start_date, hour, minute, cron_expression, disabled } =
       scheduleData;
     const medication = await this.medicationsService.getOne(
       scheduleData.medicationId,
+      userId,
     );
     if (!medication) {
       throw new NotFoundException(
