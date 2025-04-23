@@ -37,7 +37,7 @@ export class Schedule {
   @Column('varchar', { length: 40, nullable: false })
   cron_expression: string;
 
-  @Column('varchar', { nullable: false, default: false })
+  @Column('boolean', { nullable: false, default: false })
   disabled: boolean;
 
   @CreateDateColumn({ type: 'timestamptz' })

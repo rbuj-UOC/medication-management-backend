@@ -19,6 +19,9 @@ export class Medication {
   @Column('varchar', { unique: false, length: 255, nullable: false })
   name: string;
 
+  @Column('boolean', { nullable: false, default: false })
+  disabled: boolean;
+
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;
 
