@@ -6,10 +6,11 @@ import { UsersModule } from 'src/users/users.module';
 import { Schedule } from './entities/schedules.entity';
 import { SchedulesController } from './schedules.controller';
 import { SchedulesService } from './schedules.service';
+import { SchedulesSubscriber } from './subscriber/schedules.subscriber';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Schedule, Medication]), UsersModule],
-  providers: [SchedulesService, MedicationsService],
+  providers: [SchedulesService, MedicationsService, SchedulesSubscriber],
   controllers: [SchedulesController],
 })
 export class SchedulesModule {}

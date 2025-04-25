@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CronJob } from 'cron';
 import { MedicationsService } from 'src/medications/medications.service';
 import { Repository } from 'typeorm';
 import { CreateScheduleDTO } from './dto/create-schedule.dto';
@@ -12,6 +14,7 @@ export class SchedulesService {
     @InjectRepository(Schedule)
     private scheduleRepository: Repository<Schedule>,
     private readonly medicationsService: MedicationsService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   async getAll() {
@@ -78,5 +81,51 @@ export class SchedulesService {
       throw new NotFoundException(`Schedule with ID ${id} not found`);
     }
     return await this.scheduleRepository.remove(schedule);
+  }
+
+  /* Scheduler */
+
+  getCrons() {
+    const jobs = this.schedulerRegistry.getCronJobs();
+    jobs.forEach((value, key, map) => {
+      let next;
+      try {
+        next = value.nextDate().toJSDate().toISOString();
+      } catch (e) {
+        next = 'error: next fire date is in the past!';
+      }
+      console.log(`job: ${key} -> next: ${next}`);
+    });
+  }
+
+  createTask(schedule: Schedule): void {
+    try {
+      const key = schedule.id.toString();
+      const cron_expression = schedule.cron_expression;
+      console.log(`createTask: ${key} -> ${cron_expression}`);
+      const task = new CronJob(cron_expression, () => {
+        console.log(`time (${cron_expression}) for job ${key} to run!`);
+      });
+      this.schedulerRegistry.addCronJob(key, task);
+      task.start();
+      this.getCrons();
+    } catch (e) {
+      console.log('Error creating task:', e.message);
+    }
+  }
+
+  deleteTask(schedule: Schedule): void {
+    try {
+      const key = schedule.id.toString();
+      console.log(`deleteTask: ${key}`);
+      const task = this.schedulerRegistry.getCronJob(key);
+      if (task) {
+        task.stop();
+        this.schedulerRegistry.deleteCronJob(key);
+      }
+      this.getCrons();
+    } catch (e) {
+      console.log('Error deleting task:', e.message);
+    }
   }
 }
