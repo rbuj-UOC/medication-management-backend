@@ -379,7 +379,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"frequency\": \"daily\",\n    \"hour\": \"9\",\n    \"minute\": \"30\",\n    \"cron_expression\": \"45 12 * * *\",\n    \"medication_id\": \"1\"\n}",
+					"raw": "{\n    \"frequency\": \"daily\",\n    \"start_date\": \"2000-10-31T01:30:00.000-05:00\",\n    \"hour\": \"9\",\n    \"minute\": \"30\",\n    \"cron_expression\": \"45 12 * * *\",\n    \"medication_id\": \"1\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

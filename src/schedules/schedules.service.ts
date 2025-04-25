@@ -31,23 +31,29 @@ export class SchedulesService {
   }
 
   async addSchedule(scheduleData: CreateScheduleDTO, userId: string) {
-    const { start_date, hour, minute, cron_expression, disabled } =
-      scheduleData;
-    const medication = await this.medicationsService.getOne(
-      scheduleData.medicationId,
-      userId,
-    );
-    if (!medication) {
-      throw new NotFoundException(
-        `Medication with ID ${scheduleData.medicationId} not found`,
-      );
-    }
-    const schedule = this.scheduleRepository.create({
+    const {
+      frequency,
       start_date,
       hour,
       minute,
       cron_expression,
-      disabled,
+      medication_id,
+    } = scheduleData;
+    const medication = await this.medicationsService.getOne(
+      medication_id,
+      userId,
+    );
+    if (!medication) {
+      throw new NotFoundException(
+        `Medication with ID ${scheduleData.medication_id} not found`,
+      );
+    }
+    const schedule = this.scheduleRepository.create({
+      frequency,
+      start_date,
+      hour,
+      minute,
+      cron_expression,
       medication,
     });
     return await this.scheduleRepository.save(schedule);

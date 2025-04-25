@@ -19,6 +19,10 @@ export class CreateScheduleDTO {
   @IsNotEmpty({ message: 'Please define a cron expression' })
   cron_expression: string;
 
+  @IsString()
+  @IsNotEmpty({ message: 'Please define a frequency' })
+  frequency: string;
+
   @IsBoolean()
   @IsNotEmpty({ message: 'Please define whether is disabled' })
   disabled: boolean;
@@ -37,5 +41,5 @@ export class CreateScheduleDTO {
 
   @IsInt()
   @IsNotEmpty({ message: 'Please define a medication id' })
-  medicationId: number;
+  medication_id: number;
 }

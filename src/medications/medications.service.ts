@@ -21,7 +21,7 @@ export class MedicationsService {
   async getOne(id: number, user_id: string): Promise<Medication> {
     const medication = await this.medicationRepository.findOne({
       where: { id, user: { id: user_id } },
-      relations: ['user'],
+      relations: ['user', 'schedules'],
     });
     if (!medication) {
       throw new NotFoundException(`Medication with ID ${id} not found`);
@@ -32,6 +32,7 @@ export class MedicationsService {
   async getByUserId(userId: string): Promise<Medication[]> {
     return this.medicationRepository.find({
       where: { user: { id: userId } },
+      relations: ['schedules'],
     });
   }
 
