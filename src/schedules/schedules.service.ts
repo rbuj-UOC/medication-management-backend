@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CronJob } from 'cron';
@@ -9,7 +13,7 @@ import { UpdateScheduleDTO } from './dto/update-schedule.dto';
 import { Schedule } from './entities/schedules.entity';
 
 @Injectable()
-export class SchedulesService {
+export class SchedulesService implements OnApplicationBootstrap {
   constructor(
     @InjectRepository(Schedule)
     private scheduleRepository: Repository<Schedule>,
@@ -17,7 +21,11 @@ export class SchedulesService {
     private schedulerRegistry: SchedulerRegistry,
   ) {}
 
-  async getAll() {
+  async onApplicationBootstrap() {
+    await this.loadTasks();
+  }
+
+  async getAll(): Promise<Schedule[]> {
     return await this.scheduleRepository.find();
   }
 
@@ -127,5 +135,12 @@ export class SchedulesService {
     } catch (e) {
       console.log('Error deleting task:', e.message);
     }
+  }
+
+  async loadTasks() {
+    const schedules = await this.getAll();
+    schedules.forEach((schedule) => {
+      this.createTask(schedule);
+    });
   }
 }
