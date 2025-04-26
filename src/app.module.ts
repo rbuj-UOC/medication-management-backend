@@ -10,6 +10,7 @@ import { MedicationsModule } from './medications/medications.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { UsersModule } from './users/users.module';
 import { VerificationsModule } from './verifications/verifications.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { VerificationsModule } from './verifications/verifications.module';
     MedicationsModule,
     VerificationsModule,
     SchedulesModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
