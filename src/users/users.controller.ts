@@ -78,6 +78,22 @@ export class UsersController {
     return updatedUser;
   }
 
+  @Put('user/:id')
+  @Auth(Role.Admin)
+  async updateUserByUserId(
+    @ActiveUser() user: ActiveUserInterface,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateData: UpdateUserDTO,
+  ) {
+    const updatedUser = await this.usersService.updateUserByUserId(
+      user.user_id,
+      id,
+      updateData,
+    );
+    updatedUser.password = undefined; // Remove password from the response
+    return updatedUser;
+  }
+
   @Put(':id')
   @Auth(Role.Admin)
   async updateUserAdmin(

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDTO } from './dto/create-user.dto';
@@ -11,6 +15,19 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
+
+  async addUser(userData: CreateUserDTO): Promise<User> {
+    const user = this.userRepository.create(userData);
+    return await this.userRepository.save(user);
+  }
+
+  async deleteUser(id: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return await this.userRepository.remove(user);
+  }
 
   async getAll() {
     return await this.userRepository.find();
@@ -43,11 +60,6 @@ export class UsersService {
     return user;
   }
 
-  async addUser(userData: CreateUserDTO): Promise<User> {
-    const user = this.userRepository.create(userData);
-    return await this.userRepository.save(user);
-  }
-
   async updateUser(id: string, updateData: UpdateUserDTO): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
@@ -57,11 +69,21 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
-  async deleteUser(id: string) {
+  async updateUserByUserId(
+    id: string,
+    userId: string,
+    updateData: UpdateUserDTO,
+  ): Promise<User> {
+    if (id === userId) {
+      throw new BadRequestException(
+        'You cannot update your own user data with this endpoint',
+      );
+    }
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return await this.userRepository.remove(user);
+    this.userRepository.merge(user, updateData);
+    return await this.userRepository.save(user);
   }
 }
