@@ -28,17 +28,8 @@ export class Schedule {
   @Column('varchar', { unique: false, length: 40, default: Frequency.Daily })
   frequency: string;
 
-  @Column('smallint', { nullable: false })
-  hour: number;
-
-  @Column('smallint', { nullable: false })
-  minute: number;
-
   @Column('varchar', { length: 40, nullable: false })
   cron_expression: string;
-
-  @Column('boolean', { nullable: false, default: false })
-  disabled: boolean;
 
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;

@@ -67,6 +67,65 @@
 			"response": []
 		},
 		{
+			"name": "auth (not logged in) admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set('access_token', jsonData.access_token);",
+							"pm.environment.set('user_id', jsonData.user_id);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"test@test.es\",\n  \"password\": \"testtest\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "auth (logged in)",
 			"request": {
 				"auth": {
@@ -379,7 +438,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"frequency\": \"daily\",\n    \"start_date\": \"2000-10-31T01:30:00.000-05:00\",\n    \"hour\": \"9\",\n    \"minute\": \"30\",\n    \"cron_expression\": \"45 12 * * *\",\n    \"medication_id\": \"1\"\n}",
+					"raw": "{\n    \"frequency\": \"daily\",\n    \"start_date\": \"2000-10-31T01:30:00.000-05:00\",\n    \"cron_expression\": \"45 12 * * *\",\n    \"medication_id\": \"1\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -582,6 +641,48 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"name\": \"Robert\",\n    \"surname_1\": \"Buj\",\n    \"alias\": \"rbuj\",\n    \"birth_date\": \"11/11/1960\",\n    \"email\": \"test@test.org\",\n    \"password\": \"testtest\",\n    \"role\": \"user\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users (not logged in) admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set('user_id', jsonData.id);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Robert\",\n    \"surname_1\": \"Buj\",\n    \"alias\": \"admin\",\n    \"birth_date\": \"11/11/1960\",\n    \"email\": \"test@test.es\",\n    \"password\": \"testtest\",\n    \"role\": \"admin\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

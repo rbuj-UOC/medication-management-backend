@@ -42,14 +42,8 @@ export class SchedulesService implements OnApplicationBootstrap {
   }
 
   async addSchedule(scheduleData: CreateScheduleDTO, userId: string) {
-    const {
-      frequency,
-      start_date,
-      hour,
-      minute,
-      cron_expression,
-      medication_id,
-    } = scheduleData;
+    const { frequency, start_date, cron_expression, medication_id } =
+      scheduleData;
     const medication = await this.medicationsService.getOne(
       medication_id,
       userId,
@@ -62,8 +56,6 @@ export class SchedulesService implements OnApplicationBootstrap {
     const schedule = this.scheduleRepository.create({
       frequency,
       start_date,
-      hour,
-      minute,
       cron_expression,
       medication,
     });
