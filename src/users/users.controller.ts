@@ -17,6 +17,7 @@ import { Role } from 'src/common/enums/role.enum';
 import { ActiveUserInterface } from 'src/common/interfaces/active-user.interface';
 import { QueryFailedError } from 'typeorm';
 import { CreateUserDTO } from './dto/create-user.dto';
+import { SelectUserDTO } from './dto/select-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { User } from './entities/users.entity';
 import { UsersService } from './users.service';
@@ -62,6 +63,19 @@ export class UsersController {
       }
       throw new BadRequestException(message);
     }
+  }
+
+  @Post('contact')
+  @Auth(Role.User)
+  async addContact(
+    @ActiveUser() user: ActiveUserInterface,
+    @Body() contactData: SelectUserDTO,
+  ) {
+    const updatedUser = await this.usersService.addContact(
+      user.user_id,
+      contactData,
+    );
+    return updatedUser.contacts;
   }
 
   @Put()
@@ -113,7 +127,20 @@ export class UsersController {
     return deletedUser;
   }
 
-  @Delete(':id')
+  @Delete('contact')
+  @Auth(Role.User)
+  async deleteContact(
+    @ActiveUser() user: ActiveUserInterface,
+    @Body() contactData: SelectUserDTO,
+  ) {
+    const updatedUser = await this.usersService.deleteContact(
+      user.user_id,
+      contactData,
+    );
+    return updatedUser.contacts;
+  }
+
+  @Delete('user/:id')
   @Auth(Role.Admin)
   async deleteUserAdmin(
     @Param('id', ParseUUIDPipe) id: string,

@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDTO } from './dto/create-user.dto';
+import { SelectUserDTO } from './dto/select-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { User } from './entities/users.entity';
 
@@ -16,12 +17,32 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
+  async addContact(id: string, contactData: SelectUserDTO): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['contacts'],
+    });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    const contact = await this.userRepository.findOne({
+      where: { email: contactData.email },
+    });
+    if (!contact) {
+      throw new NotFoundException(
+        `Contact with email ${contactData.email} not found`,
+      );
+    }
+    user.contacts.push(contact);
+    return await this.userRepository.save(user);
+  }
+
   async addUser(userData: CreateUserDTO): Promise<User> {
     const user = this.userRepository.create(userData);
     return await this.userRepository.save(user);
   }
 
-  async deleteUser(id: string) {
+  async deleteUser(id: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -29,11 +50,33 @@ export class UsersService {
     return await this.userRepository.remove(user);
   }
 
-  async getAll() {
+  async deleteContact(id: string, contact: SelectUserDTO): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['contacts'],
+    });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    const contactToRemove = await this.userRepository.findOne({
+      where: { email: contact.email },
+    });
+    if (!contactToRemove) {
+      throw new NotFoundException(
+        `Contact with email ${contact.email} not found`,
+      );
+    }
+    user.contacts = user.contacts.filter(
+      (contact) => contact.email !== contactToRemove.email,
+    );
+    return await this.userRepository.save(user);
+  }
+
+  async getAll(): Promise<User[]> {
     return await this.userRepository.find();
   }
 
-  async getOne(id: string) {
+  async getOne(id: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -49,7 +92,7 @@ export class UsersService {
     return user;
   }
 
-  async getOneByEmail(email: string) {
+  async getOneByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email },
       select: ['id', 'alias', 'email', 'password', 'role'],

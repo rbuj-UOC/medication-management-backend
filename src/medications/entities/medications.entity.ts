@@ -28,10 +28,14 @@ export class Medication {
   @UpdateDateColumn({ type: 'timestamptz' })
   updated_at: Date;
 
+  // Relationships
+
+  // User who created the medication
   @ManyToOne(() => User, (user) => user.medications, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
+  // Schedules associated with the medication
   @OneToMany(() => Schedule, (schedule) => schedule.medication)
   schedules: Schedule[];
 }

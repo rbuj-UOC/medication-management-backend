@@ -8,6 +8,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -63,6 +65,14 @@ export class User {
     return bcrypt.compare(password, this.password);
   }
 
+  // Relationships
+
+  // Medications associated with the user
   @OneToMany(() => Medication, (medication) => medication.user)
   medications: Medication[];
+
+  // Self referencing relation
+  @ManyToMany(() => User, (user) => user.contacts)
+  @JoinTable()
+  contacts: User[];
 }

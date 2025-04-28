@@ -37,6 +37,9 @@ export class Schedule {
   @UpdateDateColumn({ type: 'timestamptz' })
   updated_at: Date;
 
+  // Relationships
+
+  // Medication associated with the schedule
   @ManyToOne(() => Medication, (medication) => medication.schedules, {
     onDelete: 'CASCADE',
   })
