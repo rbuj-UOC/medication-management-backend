@@ -7,10 +7,11 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import databaseConfig from './config/database.config';
 import { MedicationsModule } from './medications/medications.module';
+import { NotificationModule } from './notification/notification.module';
 import { SchedulesModule } from './schedules/schedules.module';
+import { TasksModule } from './tasks/tasks.module';
 import { UsersModule } from './users/users.module';
 import { VerificationsModule } from './verifications/verifications.module';
-import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TasksModule } from './tasks/tasks.module';
     VerificationsModule,
     SchedulesModule,
     TasksModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

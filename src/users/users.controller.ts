@@ -15,6 +15,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ActiveUser } from 'src/common/decorators/active-user.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { ActiveUserInterface } from 'src/common/interfaces/active-user.interface';
+import { NotificationDto } from 'src/notification/dto/create-notification.dto';
+import { UpdateNotificationDto } from 'src/notification/dto/update-notification.dto';
 import { QueryFailedError } from 'typeorm';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { SelectUserDTO } from './dto/select-user.dto';
@@ -160,5 +162,29 @@ export class UsersController {
     const deletedUser = await this.usersService.deleteUser(id);
     deletedUser.password = undefined; // Remove password from the response
     return deletedUser;
+  }
+
+  @Put('push/enable')
+  async enablePush(
+    @Body() updateNotificationDto: NotificationDto,
+    @ActiveUser() user: ActiveUserInterface,
+  ) {
+    await this.usersService.enablePush(user.user_id, updateNotificationDto);
+  }
+
+  @Put('push/disable')
+  async disablePush(
+    @Body() updateNotificationDto: UpdateNotificationDto,
+    @ActiveUser() user: ActiveUserInterface,
+  ) {
+    return await this.usersService.disablePush(
+      user.user_id,
+      updateNotificationDto,
+    );
+  }
+
+  @Get('push/notifications')
+  async fetchPusNotifications(@ActiveUser() user: ActiveUserInterface) {
+    await this.usersService.getPushNotifications(user.user_id);
   }
 }
