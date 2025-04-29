@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Role } from 'src/common/enums/role.enum';
 import { Repository } from 'typeorm';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { SelectUserDTO } from './dto/select-user.dto';
@@ -25,10 +26,13 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
+    if (user.email === contactData.email) {
+      throw new BadRequestException('You cannot add yourself as a contact');
+    }
     const contact = await this.userRepository.findOne({
       where: { email: contactData.email },
     });
-    if (!contact) {
+    if (!contact || contact.role === Role.Admin) {
       throw new NotFoundException(
         `Contact with email ${contactData.email} not found`,
       );

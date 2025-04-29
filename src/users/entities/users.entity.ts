@@ -46,7 +46,7 @@ export class User {
   password: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.User })
-  role: string;
+  role: Role;
 
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;
