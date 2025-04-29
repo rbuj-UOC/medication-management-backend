@@ -103,6 +103,17 @@ export class UsersService {
     return user;
   }
 
+  async getUserContacts(id: string): Promise<User[]> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['contacts'],
+    });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user.contacts;
+  }
+
   async updateUser(id: string, updateData: UpdateUserDTO): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {

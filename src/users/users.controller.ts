@@ -32,6 +32,14 @@ export class UsersController {
     return await this.usersService.getAll();
   }
 
+  @Get('contacts')
+  @Auth(Role.User)
+  async getUserContacts(
+    @ActiveUser() user: ActiveUserInterface,
+  ): Promise<User[]> {
+    return await this.usersService.getUserContacts(user.user_id);
+  }
+
   @Get('user')
   @UseGuards(JwtAuthGuard)
   async getOne(@ActiveUser() user: ActiveUserInterface): Promise<User> {
