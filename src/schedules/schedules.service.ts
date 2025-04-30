@@ -7,6 +7,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CronJob } from 'cron';
 import { MedicationsService } from 'src/medications/medications.service';
+import { NotificationService } from 'src/notification/notification.service';
 import { Repository } from 'typeorm';
 import { CreateScheduleDTO } from './dto/create-schedule.dto';
 import { UpdateScheduleDTO } from './dto/update-schedule.dto';
@@ -18,6 +19,7 @@ export class SchedulesService implements OnApplicationBootstrap {
     @InjectRepository(Schedule)
     private scheduleRepository: Repository<Schedule>,
     private readonly medicationsService: MedicationsService,
+    private readonly notificationService: NotificationService,
     private schedulerRegistry: SchedulerRegistry,
   ) {}
 
@@ -98,17 +100,50 @@ export class SchedulesService implements OnApplicationBootstrap {
     });
   }
 
-  createTask(schedule: Schedule): void {
+  async createTask(schedule: Schedule): Promise<void> {
     try {
       const key = schedule.id.toString();
       const cron_expression = schedule.cron_expression;
       console.log(`createTask: ${key} -> ${cron_expression}`);
-      const task = new CronJob(cron_expression, () => {
-        console.log(`time (${cron_expression}) for job ${key} to run!`);
+      // WIP
+      const scheduledMedication = await this.scheduleRepository.findOne({
+        select: {
+          id: true,
+          start_date: true,
+          medication: {
+            name: true,
+            disabled: true,
+            user: {
+              device_token: true,
+              email: true,
+            },
+          },
+        },
+        where: { id: schedule.id },
+        relations: ['medication', 'medication.user'],
       });
-      this.schedulerRegistry.addCronJob(key, task);
-      task.start();
-      this.getCrons();
+      // console.log('scheduledMedication:', scheduledMedication);
+      if (
+        scheduledMedication &&
+        scheduledMedication.medication.disabled === false &&
+        scheduledMedication.medication.user.device_token
+      ) {
+        const task = new CronJob(cron_expression, () => {
+          this.notificationService
+            .sendPush(
+              scheduledMedication.medication.user,
+              'Medication Reminder',
+              `It's time to take ${scheduledMedication.medication.name} at ${scheduledMedication.start_date.getHours()}:${scheduledMedication.start_date.getMinutes()}!`,
+            )
+            .catch((error) => {
+              console.error('Error sending push notification:', error);
+            });
+          console.log(`time (${cron_expression}) for job ${key} to run!`);
+        });
+        this.schedulerRegistry.addCronJob(key, task);
+        task.start();
+        this.getCrons();
+      }
     } catch (e) {
       console.log('Error creating task:', e.message);
     }

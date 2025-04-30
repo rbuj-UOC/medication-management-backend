@@ -1,27 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as firebase from 'firebase-admin';
+import * as admin from 'firebase-admin';
 import { User } from 'src/users/entities/users.entity';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
-
-const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-};
-
-firebase.initializeApp(firebaseConfig);
 
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectRepository(Notification)
     private readonly notificationsRepo: Repository<Notification>,
-  ) {}
+  ) {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      }),
+    });
+  }
 
   async getNotifications(userId: string): Promise<any> {
     return await this.notificationsRepo.find({
@@ -40,7 +37,7 @@ export class NotificationService {
           status: 'ACTIVE',
           created_by: user.email,
         });
-        await firebase
+        await admin
           .messaging()
           .send({
             notification: { title, body },
