@@ -4,7 +4,6 @@ import { Role } from 'src/common/enums/role.enum';
 import { Medication } from 'src/medications/entities/medications.entity';
 import {
   BeforeInsert,
-  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -48,6 +47,9 @@ export class User {
   @Column({ type: 'enum', enum: Role, default: Role.User })
   role: Role;
 
+  @Column('varchar', { nullable: true })
+  device_token: string;
+
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;
 
@@ -55,7 +57,6 @@ export class User {
   updated_at: Date;
 
   @BeforeInsert()
-  @BeforeUpdate()
   async hashPasswordUpdate() {
     const salt = await bcrypt.genSalt();
     this.password = await bcrypt.hash(this.password, salt);

@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/enums/role.enum';
 import { NotificationDto } from 'src/notification/dto/create-notification.dto';
 import { UpdateNotificationDto } from 'src/notification/dto/update-notification.dto';
@@ -103,7 +104,7 @@ export class UsersService {
   async getOneByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email },
-      select: ['id', 'alias', 'email', 'password', 'role'],
+      select: ['id', 'alias', 'email', 'password', 'role', 'device_token'],
     });
     if (!user) {
       throw new NotFoundException(`User with email ${email} not found`);
@@ -126,6 +127,10 @@ export class UsersService {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    if ('password' in updateData) {
+      const salt = await bcrypt.genSalt();
+      updateData.password = await bcrypt.hash(updateData.password, salt);
     }
     this.userRepository.merge(user, updateData);
     return await this.userRepository.save(user);
