@@ -6,8 +6,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/enums/role.enum';
-import { NotificationDto } from 'src/notification/dto/create-notification.dto';
-import { UpdateNotificationDto } from 'src/notification/dto/update-notification.dto';
 import { NotificationService } from 'src/notification/notification.service';
 import { Repository } from 'typeorm';
 import { CreateUserDTO } from './dto/create-user.dto';
@@ -152,26 +150,6 @@ export class UsersService {
     }
     this.userRepository.merge(user, updateData);
     return await this.userRepository.save(user);
-  }
-
-  async enablePush(userId: string, update_dto: NotificationDto): Promise<any> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
-    return await this.notificationService.acceptPushNotification(
-      user,
-      update_dto,
-    );
-  }
-
-  async disablePush(
-    userId: string,
-    update_dto: UpdateNotificationDto,
-  ): Promise<void> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
-    await this.notificationService.disablePushNotification(user, update_dto);
   }
 
   async getPushNotifications(userId: string): Promise<any> {

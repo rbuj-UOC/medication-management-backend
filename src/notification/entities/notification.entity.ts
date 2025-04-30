@@ -1,3 +1,4 @@
+import { User } from 'src/users/entities/users.entity';
 import {
   Column,
   CreateDateColumn,
@@ -7,16 +8,15 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { NotificationToken } from './notification-token.entity';
 
 @Entity({ name: 'notification' })
 export class Notification {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @JoinColumn({ name: 'notification_token_id', referencedColumnName: 'id' })
-  @ManyToOne(() => NotificationToken)
-  notification_token: NotificationToken;
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
+  @ManyToOne(() => User)
+  user: User;
 
   @Column()
   title: string;
