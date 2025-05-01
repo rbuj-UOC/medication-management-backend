@@ -134,24 +134,6 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
-  async updateUserByUserId(
-    id: string,
-    userId: string,
-    updateData: UpdateUserDTO,
-  ): Promise<User> {
-    if (id === userId) {
-      throw new BadRequestException(
-        'You cannot update your own user data with this endpoint',
-      );
-    }
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-    this.userRepository.merge(user, updateData);
-    return await this.userRepository.save(user);
-  }
-
   async getPushNotifications(userId: string): Promise<any> {
     return await this.notificationService.getNotifications(userId);
   }

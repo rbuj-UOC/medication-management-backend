@@ -106,28 +106,18 @@ export class UsersController {
     return updatedUser;
   }
 
-  @Put('user/:id')
+  @Put(':id')
   @Auth(Role.Admin)
-  async updateUserByUserId(
+  async updateUserAdmin(
     @ActiveUser() user: ActiveUserInterface,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateUserDTO,
   ) {
-    const updatedUser = await this.usersService.updateUserByUserId(
-      user.user_id,
-      id,
-      updateData,
-    );
-    updatedUser.password = undefined; // Remove password from the response
-    return updatedUser;
-  }
-
-  @Put(':id')
-  @Auth(Role.Admin)
-  async updateUserAdmin(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateData: UpdateUserDTO,
-  ) {
+    if (id === user.user_id) {
+      throw new BadRequestException(
+        'You cannot update your own user data with this endpoint',
+      );
+    }
     const updatedUser = await this.usersService.updateUser(id, updateData);
     updatedUser.password = undefined; // Remove password from the response
     return updatedUser;
