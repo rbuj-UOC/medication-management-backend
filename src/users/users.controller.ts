@@ -93,7 +93,7 @@ export class UsersController {
   }
 
   @Put()
-  @Auth(Role.User)
+  @UseGuards(JwtAuthGuard)
   async updateUser(
     @ActiveUser() user: ActiveUserInterface,
     @Body() updateData: UpdateUserDTO,
