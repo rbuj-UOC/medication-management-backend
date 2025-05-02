@@ -122,7 +122,6 @@ export class SchedulesService implements OnApplicationBootstrap {
         where: { id: schedule.id },
         relations: ['medication', 'medication.user'],
       });
-      // console.log('scheduledMedication:', scheduledMedication);
       if (
         scheduledMedication &&
         scheduledMedication.medication.disabled === false &&
@@ -166,8 +165,8 @@ export class SchedulesService implements OnApplicationBootstrap {
 
   async loadTasks() {
     const schedules = await this.getAll();
-    schedules.forEach((schedule) => {
-      this.createTask(schedule);
-    });
+    for (const schedule of schedules) {
+      await this.createTask(schedule);
+    }
   }
 }
