@@ -2,6 +2,10 @@ import { IsDate, IsInt, IsNotEmpty, IsString } from '@nestjs/class-validator';
 
 export class CreateScheduleDTO {
   @IsDate()
+  @IsNotEmpty({ message: 'Please define a time' })
+  time: Date;
+
+  @IsDate()
   @IsNotEmpty({ message: 'Please define a start date' })
   start_date: Date;
 

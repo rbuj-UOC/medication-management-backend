@@ -25,6 +25,13 @@ export class Schedule {
   @Column({ type: 'timestamptz', nullable: true })
   end_date: Date;
 
+  @Column({
+    type: 'time without time zone',
+    nullable: false,
+    default: () => 'CURRENT_TIME',
+  })
+  time: Date;
+
   @Column('varchar', { unique: false, length: 40, default: Frequency.Daily })
   frequency: string;
 

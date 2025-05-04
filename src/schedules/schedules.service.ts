@@ -34,6 +34,7 @@ export class SchedulesService implements OnApplicationBootstrap {
   async getByMedicationId(id: number): Promise<Schedule[]> {
     return await this.scheduleRepository.find({
       where: { medication: { id } },
+      order: { time: 'ASC' },
     });
   }
 
@@ -44,7 +45,7 @@ export class SchedulesService implements OnApplicationBootstrap {
   }
 
   async addSchedule(scheduleData: CreateScheduleDTO, userId: string) {
-    const { frequency, start_date, cron_expression, medication_id } =
+    const { frequency, start_date, cron_expression, time, medication_id } =
       scheduleData;
     const medication = await this.medicationsService.getOne(
       medication_id,
@@ -57,6 +58,7 @@ export class SchedulesService implements OnApplicationBootstrap {
     }
     const schedule = this.scheduleRepository.create({
       frequency,
+      time,
       start_date,
       cron_expression,
       medication,
