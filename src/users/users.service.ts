@@ -80,7 +80,7 @@ export class UsersService {
   }
 
   async getAll(): Promise<User[]> {
-    return await this.userRepository.find();
+    return await this.userRepository.find({ order: { surname_1: 'ASC' } });
   }
 
   async getOne(id: string): Promise<User> {
