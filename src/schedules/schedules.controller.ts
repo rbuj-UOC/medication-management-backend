@@ -45,6 +45,14 @@ export class SchedulesController {
     return await this.schedulesService.getByScheduleId(id);
   }
 
+  @Get('today')
+  @Auth(Role.User)
+  async getTodayScheduling(
+    @ActiveUser() user: ActiveUserInterface,
+  ): Promise<Schedule[]> {
+    return await this.schedulesService.getTodayScheduling(user.user_id);
+  }
+
   @Post()
   @Auth(Role.User)
   async addSchedule(

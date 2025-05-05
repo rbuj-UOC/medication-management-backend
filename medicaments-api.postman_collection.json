@@ -467,7 +467,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"frequency\": \"daily\",\n    \"start_date\": \"2000-10-31T01:30:00.000-05:00\",\n    \"cron_expression\": \"45 12 * * *\",\n    \"medication_id\": \"1\"\n}",
+					"raw": "{\n    \"frequency\": \"daily\",\n    \"start_date\": \"2000-10-31T01:30:00.000-05:00\",\n    \"time\": \"12:45:00\",\n    \"cron_expression\": \"45 12 * * *\",\n    \"medication_id\": \"1\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -489,7 +489,7 @@
 			"response": []
 		},
 		{
-			"name": "schedules (user)",
+			"name": "schedules (admin)",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -643,6 +643,36 @@
 						"schedules",
 						"schedule",
 						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "schedules/today (user)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/schedules/today",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"schedules",
+						"today"
 					]
 				}
 			},

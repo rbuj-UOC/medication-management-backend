@@ -44,6 +44,25 @@ export class SchedulesService implements OnApplicationBootstrap {
     });
   }
 
+  async getTodayScheduling(userId: string): Promise<Schedule[]> {
+    return await this.scheduleRepository.find({
+      select: {
+        start_date: true,
+        medication: {
+          name: true,
+          user: {
+            id: true,
+          },
+        },
+      },
+      where: {
+        medication: { user: { id: userId }, disabled: false },
+      },
+      relations: ['medication', 'medication.user'],
+      order: { time: 'ASC' },
+    });
+  }
+
   async addSchedule(scheduleData: CreateScheduleDTO, userId: string) {
     const { frequency, start_date, cron_expression, time, medication_id } =
       scheduleData;
