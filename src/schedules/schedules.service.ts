@@ -121,52 +121,47 @@ export class SchedulesService implements OnApplicationBootstrap {
     });
   }
 
-  async createTask(schedule: Schedule): Promise<void> {
-    try {
-      const key = schedule.id.toString();
-      const cron_expression = schedule.cron_expression;
-      console.log(`createTask: ${key} -> ${cron_expression}`);
-      // WIP
-      const scheduledMedication = await this.scheduleRepository.findOne({
-        select: {
-          id: true,
-          start_date: true,
-          medication: {
-            name: true,
-            disabled: true,
-            user: {
-              device_token: true,
-              email: true,
+  createTask(schedule: Schedule): void {
+    const key = schedule.id.toString();
+    const cron_expression = schedule.cron_expression;
+    console.log(`createTask: ${key} -> ${cron_expression}`);
+    const task = new CronJob(cron_expression, async () => {
+      try {
+        const scheduledMedication = await this.scheduleRepository.findOne({
+          select: {
+            id: true,
+            start_date: true,
+            medication: {
+              name: true,
+              disabled: true,
+              user: {
+                device_token: true,
+                email: true,
+              },
             },
           },
-        },
-        where: { id: schedule.id },
-        relations: ['medication', 'medication.user'],
-      });
-      if (
-        scheduledMedication &&
-        scheduledMedication.medication.disabled === false &&
-        scheduledMedication.medication.user.device_token
-      ) {
-        const task = new CronJob(cron_expression, () => {
-          this.notificationService
-            .sendPush(
-              scheduledMedication.medication.user,
-              'Medication Reminder',
-              `It's time to take ${scheduledMedication.medication.name} at ${scheduledMedication.start_date.getHours()}:${scheduledMedication.start_date.getMinutes()}!`,
-            )
-            .catch((error) => {
-              console.error('Error sending push notification:', error);
-            });
-          console.log(`time (${cron_expression}) for job ${key} to run!`);
+          where: { id: schedule.id },
+          relations: ['medication', 'medication.user'],
         });
-        this.schedulerRegistry.addCronJob(key, task);
-        task.start();
-        this.getCrons();
+        if (
+          scheduledMedication &&
+          scheduledMedication.medication.disabled === false &&
+          scheduledMedication.medication.user.device_token
+        ) {
+          await this.notificationService.sendPush(
+            scheduledMedication.medication.user,
+            'Medication Reminder',
+            `It's time to take ${scheduledMedication.medication.name} at ${scheduledMedication.start_date.getHours()}:${scheduledMedication.start_date.getMinutes()}!`,
+          );
+        }
+      } catch (error) {
+        console.error('Error handling scheduled medication:', error);
       }
-    } catch (e) {
-      console.log('Error creating task:', e.message);
-    }
+      console.log(`time (${cron_expression}) for job ${key} to run!`);
+    });
+    this.schedulerRegistry.addCronJob(key, task);
+    task.start();
+    this.getCrons();
   }
 
   deleteTask(schedule: Schedule): void {
