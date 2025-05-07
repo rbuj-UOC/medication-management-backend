@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:alpine
+    image: postgres:latest
     env_file: .env
     environment:
       POSTGRES_PASSWORD: ${DB_ROOT_PASS}
