@@ -10,10 +10,13 @@ export default registerAs(
   (): TypeOrmModuleOptions => ({
     type: 'postgres',
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : undefined,
+    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432,
     username: process.env.DB_USERNAME,
-    password: process.env.DB_ROOT_PASS,
-    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    ssl: {
+      rejectUnauthorized: false,
+    },
     entities: [User, Medication, Notification, Schedule],
     synchronize: true,
   }),
