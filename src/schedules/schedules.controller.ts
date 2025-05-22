@@ -9,6 +9,13 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { ActiveUser } from 'src/common/decorators/active-user.decorator';
 import { Role } from 'src/common/enums/role.enum';
@@ -19,18 +26,135 @@ import { UpdateScheduleDTO } from './dto/update-schedule.dto';
 import { Schedule } from './entities/schedules.entity';
 import { SchedulesService } from './schedules.service';
 
+@ApiBearerAuth()
+@ApiResponse({
+  status: 401,
+  schema: {
+    type: 'object',
+    properties: {
+      message: {
+        type: 'string',
+        example: 'Unauthorized',
+      },
+      statusCode: {
+        type: 'number',
+        example: 401,
+      },
+    },
+  },
+  description: 'Unauthorized',
+})
+@ApiResponse({
+  status: 403,
+  schema: {
+    type: 'object',
+    properties: {
+      message: {
+        type: 'string',
+        example: 'Forbidden resource',
+      },
+      error: {
+        type: 'string',
+        example: 'Forbidden',
+      },
+      statusCode: {
+        type: 'number',
+        example: 403,
+      },
+    },
+  },
+  description: 'Forbidden resource',
+})
 @Controller('schedules')
 export class SchedulesController {
   constructor(private schedulesService: SchedulesService) {}
 
   @Get()
   @Auth(Role.Admin)
+  @ApiOperation({ summary: 'Get all schedules (Admin)' })
+  @ApiResponse({
+    status: 200,
+    type: Schedule,
+    example: [
+      {
+        id: 1,
+        start_date: '2025-05-21T22:00:00.000Z',
+        end_date: null,
+        time: '00:00:00',
+        frequency: 'daily',
+        cron_expression: '0 0 * * *',
+        created_at: '2025-05-22T16:31:11.800Z',
+        updated_at: '2025-05-22T16:31:11.800Z',
+      },
+      {
+        id: 2,
+        start_date: '2025-05-21T22:20:00.000Z',
+        end_date: null,
+        time: '00:20:00',
+        frequency: 'daily',
+        cron_expression: '20 0 * * *',
+        created_at: '2025-05-22T16:31:19.797Z',
+        updated_at: '2025-05-22T16:31:19.797Z',
+      },
+    ],
+    description: 'All schedules',
+    isArray: true,
+  })
   async getAll(): Promise<Schedule[]> {
     return await this.schedulesService.getAll();
   }
 
   @Get('medication/:id')
   @Auth(Role.User)
+  @ApiOperation({ summary: 'Get schedules by medication ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Schedules by medication ID',
+    type: Schedule,
+    isArray: true,
+  })
+  @ApiResponse({
+    status: 400,
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Validation failed (numeric string is expected)',
+        },
+        error: {
+          type: 'string',
+          example: 'Bad Request',
+        },
+        statusCode: {
+          type: 'number',
+          example: 400,
+        },
+      },
+    },
+    description: 'id is not a number',
+  })
+  @ApiResponse({
+    status: 404,
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Medication with ID 1 not found',
+        },
+        error: {
+          type: 'string',
+          example: 'Not Found',
+        },
+        statusCode: {
+          type: 'number',
+          example: 404,
+        },
+      },
+    },
+    description: 'Medication not found',
+  })
   async getByMedicationId(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Schedule[]> {
@@ -39,6 +163,54 @@ export class SchedulesController {
 
   @Get('schedule/:id')
   @Auth(Role.User)
+  @ApiOperation({ summary: 'Get schedule by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Schedule by ID',
+    type: Schedule,
+  })
+  @ApiResponse({
+    status: 400,
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Validation failed (numeric string is expected)',
+        },
+        error: {
+          type: 'string',
+          example: 'Bad Request',
+        },
+        statusCode: {
+          type: 'number',
+          example: 400,
+        },
+      },
+    },
+    description: 'id is not a number',
+  })
+  @ApiResponse({
+    status: 404,
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Schedule with ID 1 not found',
+        },
+        error: {
+          type: 'string',
+          example: 'Not Found',
+        },
+        statusCode: {
+          type: 'number',
+          example: 404,
+        },
+      },
+    },
+    description: 'Schedule not found',
+  })
   async getByScheduleId(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Schedule> {
@@ -47,6 +219,53 @@ export class SchedulesController {
 
   @Get('today')
   @Auth(Role.User)
+  @ApiOperation({ summary: "Get today's schedules" })
+  @ApiResponse({
+    status: 200,
+    description: "Today's schedules",
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          start_date: { type: 'string' },
+          medication: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              user: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+      },
+      example: [
+        {
+          start_date: '2025-05-21T22:00:00.000Z',
+          medication: {
+            name: 'Paracetamol 600m',
+            user: {
+              id: '38297b2b-5fa0-4dc6-b41a-59fcf2eeccca',
+            },
+          },
+        },
+        {
+          start_date: '2025-05-21T22:20:00.000Z',
+          medication: {
+            name: 'Paracetamol 600m',
+            user: {
+              id: '38297b2b-5fa0-4dc6-b41a-59fcf2eeccca',
+            },
+          },
+        },
+      ],
+    },
+    isArray: true,
+  })
   async getTodayScheduling(
     @ActiveUser() user: ActiveUserInterface,
   ): Promise<Schedule[]> {
@@ -55,6 +274,20 @@ export class SchedulesController {
 
   @Post()
   @Auth(Role.User)
+  @ApiOperation({ summary: 'Create a new schedule' })
+  @ApiBody({
+    type: CreateScheduleDTO,
+    description: 'Schedule data',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Schedule created successfully',
+    type: Schedule,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Schedule could not be created',
+  })
   async addSchedule(
     @Body() scheduleData: CreateScheduleDTO,
     @ActiveUser() user: ActiveUserInterface,
@@ -81,6 +314,74 @@ export class SchedulesController {
 
   @Put(':id')
   @Auth(Role.User)
+  @ApiOperation({ summary: 'Update a schedule' })
+  @ApiParam({
+    name: 'id',
+    description: 'Schedule ID',
+    required: true,
+    type: 'number',
+    example: 1,
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        cron_expression: {
+          type: 'string',
+          example: '45 12 * * *',
+          description: 'Cron expression for the schedule',
+        },
+      },
+    },
+    description: 'Schedule data to update',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Schedule updated successfully',
+    type: Schedule,
+  })
+  @ApiResponse({
+    status: 400,
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Validation failed (numeric string is expected)',
+        },
+        error: {
+          type: 'string',
+          example: 'Bad Request',
+        },
+        statusCode: {
+          type: 'number',
+          example: 400,
+        },
+      },
+    },
+    description: 'id is not a number',
+  })
+  @ApiResponse({
+    status: 404,
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Schedule with ID 1 not found',
+        },
+        error: {
+          type: 'string',
+          example: 'Not Found',
+        },
+        statusCode: {
+          type: 'number',
+          example: 404,
+        },
+      },
+    },
+    description: 'Schedule not found',
+  })
   async updateSchedule(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateData: UpdateScheduleDTO,
@@ -90,6 +391,61 @@ export class SchedulesController {
 
   @Delete(':id')
   @Auth(Role.User)
+  @ApiOperation({ summary: 'Delete a schedule' })
+  @ApiParam({
+    name: 'id',
+    description: 'Schedule ID',
+    required: true,
+    type: 'number',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Schedule deleted successfully',
+    type: Schedule,
+  })
+  @ApiResponse({
+    status: 400,
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Validation failed (numeric string is expected)',
+        },
+        error: {
+          type: 'string',
+          example: 'Bad Request',
+        },
+        statusCode: {
+          type: 'number',
+          example: 400,
+        },
+      },
+    },
+    description: 'id is not a number',
+  })
+  @ApiResponse({
+    status: 404,
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Schedule with ID 1 not found',
+        },
+        error: {
+          type: 'string',
+          example: 'Not Found',
+        },
+        statusCode: {
+          type: 'number',
+          example: 404,
+        },
+      },
+    },
+    description: 'Schedule not found',
+  })
   async deleteSchedule(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Schedule> {

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { Tasks } from './tasks.interface';
+import { Task } from './tasks.interface';
 
 @Injectable()
 export class TasksService {
   constructor(private schedulerRegistry: SchedulerRegistry) {}
 
-  getAll(): Tasks[] {
-    const taskList: Tasks[] = [];
+  getAll(): Task[] {
+    const taskList: Task[] = [];
     const jobs = this.schedulerRegistry.getCronJobs();
     jobs.forEach((value, key, map) => {
       let next;

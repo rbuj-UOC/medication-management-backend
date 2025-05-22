@@ -32,6 +32,11 @@ export class UsersService {
     if (user.email === contactData.email) {
       throw new BadRequestException('You cannot add yourself as a contact');
     }
+    if (user.contacts.some((c) => c.email === contactData.email)) {
+      throw new BadRequestException(
+        `Contact with email ${contactData.email} already exists`,
+      );
+    }
     const contact = await this.userRepository.findOne({
       where: { email: contactData.email },
     });
