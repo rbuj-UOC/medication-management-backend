@@ -436,4 +436,35 @@ export class MedicationsController {
   ): Promise<Medication> {
     return await this.medicationsService.deleteMedication(id, user.user_id);
   }
+
+  @Get('stats/active')
+  @Auth(Role.Admin)
+  @ApiOperation({ summary: 'Get active medications (Admin)' })
+  @ApiOkResponse({
+    description: 'Active medications statistics',
+    schema: {
+      type: 'object',
+      properties: {
+        count: {
+          type: 'string',
+          example: '10',
+        },
+        active: {
+          type: 'string',
+          example: '8',
+        },
+        paused: {
+          type: 'string',
+          example: '2',
+        },
+      },
+    },
+  })
+  async getActiveMedicationStats(): Promise<{
+    count: string;
+    active: string;
+    paused: string;
+  }> {
+    return await this.medicationsService.getActiveMedicationStats();
+  }
 }

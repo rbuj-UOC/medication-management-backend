@@ -361,6 +361,37 @@
 			"response": []
 		},
 		{
+			"name": "medications/stats/active (admin)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/medications/stats/active",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"medications",
+						"stats",
+						"active"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "medications/user (user)",
 			"request": {
 				"auth": {

@@ -14,6 +14,27 @@ export class MedicationsService {
     private readonly usersService: UsersService,
   ) {}
 
+  async getActiveMedicationStats(): Promise<{
+    count: string;
+    active: string;
+    paused: string;
+  }> {
+    const res: { count: string; active: string; paused: string } =
+      await this.medicationRepository
+        .createQueryBuilder('medication')
+        .select('COUNT(medication.id)', 'count')
+        .addSelect(
+          'SUM(CASE WHEN medication.disabled = false THEN 1 ELSE 0 END)',
+          'active',
+        )
+        .addSelect(
+          'SUM(CASE WHEN medication.disabled = true THEN 1 ELSE 0 END)',
+          'paused',
+        )
+        .getRawOne();
+    return res;
+  }
+
   async getAll() {
     return await this.medicationRepository.find();
   }
