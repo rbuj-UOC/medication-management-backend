@@ -10,11 +10,16 @@ import {
   Put,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { ActiveUser } from 'src/common/decorators/active-user.decorator';
@@ -27,8 +32,7 @@ import { Schedule } from './entities/schedules.entity';
 import { SchedulesService } from './schedules.service';
 
 @ApiBearerAuth()
-@ApiResponse({
-  status: 401,
+@ApiUnauthorizedResponse({
   schema: {
     type: 'object',
     properties: {
@@ -44,8 +48,7 @@ import { SchedulesService } from './schedules.service';
   },
   description: 'Unauthorized',
 })
-@ApiResponse({
-  status: 403,
+@ApiForbiddenResponse({
   schema: {
     type: 'object',
     properties: {
@@ -72,8 +75,7 @@ export class SchedulesController {
   @Get()
   @Auth(Role.Admin)
   @ApiOperation({ summary: 'Get all schedules (Admin)' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     type: Schedule,
     example: [
       {
@@ -107,14 +109,12 @@ export class SchedulesController {
   @Get('medication/:id')
   @Auth(Role.User)
   @ApiOperation({ summary: 'Get schedules by medication ID' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Schedules by medication ID',
     type: Schedule,
     isArray: true,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -134,8 +134,7 @@ export class SchedulesController {
     },
     description: 'id is not a number',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -164,13 +163,11 @@ export class SchedulesController {
   @Get('schedule/:id')
   @Auth(Role.User)
   @ApiOperation({ summary: 'Get schedule by ID' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Schedule by ID',
     type: Schedule,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -190,8 +187,7 @@ export class SchedulesController {
     },
     description: 'id is not a number',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -220,8 +216,7 @@ export class SchedulesController {
   @Get('today')
   @Auth(Role.User)
   @ApiOperation({ summary: "Get today's schedules" })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: "Today's schedules",
     schema: {
       type: 'array',
@@ -279,13 +274,11 @@ export class SchedulesController {
     type: CreateScheduleDTO,
     description: 'Schedule data',
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Schedule created successfully',
     type: Schedule,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Schedule could not be created',
   })
   async addSchedule(
@@ -335,13 +328,11 @@ export class SchedulesController {
     },
     description: 'Schedule data to update',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Schedule updated successfully',
     type: Schedule,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -361,8 +352,7 @@ export class SchedulesController {
     },
     description: 'id is not a number',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -399,13 +389,11 @@ export class SchedulesController {
     type: 'number',
     example: 1,
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Schedule deleted successfully',
     type: Schedule,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -425,8 +413,7 @@ export class SchedulesController {
     },
     description: 'id is not a number',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {

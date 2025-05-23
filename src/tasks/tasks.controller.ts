@@ -1,12 +1,17 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { TasksService } from './tasks.service';
 
 @ApiBearerAuth()
-@ApiResponse({
-  status: 401,
+@ApiUnauthorizedResponse({
   schema: {
     type: 'object',
     properties: {
@@ -22,8 +27,7 @@ import { TasksService } from './tasks.service';
   },
   description: 'Unauthorized',
 })
-@ApiResponse({
-  status: 403,
+@ApiForbiddenResponse({
   schema: {
     type: 'object',
     properties: {
@@ -50,8 +54,7 @@ export class TasksController {
   @Get()
   @Auth(Role.Admin)
   @ApiOperation({ summary: 'Get all tasks (Admin)' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'All tasks',
     schema: {
       type: 'array',

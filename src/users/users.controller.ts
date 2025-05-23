@@ -11,11 +11,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -36,8 +41,7 @@ export class UsersController {
   @Get()
   @Auth(Role.Admin)
   @ApiOperation({ summary: 'Get all users (Admin)' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'All users',
     type: User,
     example: [
@@ -71,8 +75,7 @@ export class UsersController {
     ],
     isArray: true,
   })
-  @ApiResponse({
-    status: 401,
+  @ApiUnauthorizedResponse({
     schema: {
       type: 'object',
       properties: {
@@ -88,8 +91,7 @@ export class UsersController {
     },
     description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: 403,
+  @ApiForbiddenResponse({
     schema: {
       type: 'object',
       properties: {
@@ -117,8 +119,7 @@ export class UsersController {
   @Get('contacts')
   @Auth(Role.User)
   @ApiOperation({ summary: 'Get user contacts' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'User contacts',
     type: User,
     example: [
@@ -138,8 +139,7 @@ export class UsersController {
     ],
     isArray: true,
   })
-  @ApiResponse({
-    status: 401,
+  @ApiUnauthorizedResponse({
     schema: {
       type: 'object',
       properties: {
@@ -155,8 +155,7 @@ export class UsersController {
       description: 'Unauthorized',
     },
   })
-  @ApiResponse({
-    status: 403,
+  @ApiForbiddenResponse({
     schema: {
       type: 'object',
       properties: {
@@ -186,13 +185,11 @@ export class UsersController {
   @Get('push/notifications')
   @Auth(Role.User)
   @ApiOperation({ summary: 'Get push notifications' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Push notifications',
     isArray: true,
   })
-  @ApiResponse({
-    status: 401,
+  @ApiUnauthorizedResponse({
     schema: {
       type: 'object',
       properties: {
@@ -208,8 +205,7 @@ export class UsersController {
     },
     description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: 403,
+  @ApiForbiddenResponse({
     schema: {
       type: 'object',
       properties: {
@@ -237,13 +233,11 @@ export class UsersController {
   @Get('user')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get user profile' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'User profile',
     type: User,
   })
-  @ApiResponse({
-    status: 401,
+  @ApiUnauthorizedResponse({
     schema: {
       type: 'object',
       properties: {
@@ -259,8 +253,7 @@ export class UsersController {
     },
     description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -296,13 +289,11 @@ export class UsersController {
     type: 'string',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'User by ID (Admin)',
     type: User,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -322,8 +313,7 @@ export class UsersController {
     },
     description: 'id is not a valid UUID',
   })
-  @ApiResponse({
-    status: 401,
+  @ApiUnauthorizedResponse({
     schema: {
       type: 'object',
       properties: {
@@ -339,8 +329,7 @@ export class UsersController {
     },
     description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: 403,
+  @ApiForbiddenResponse({
     schema: {
       type: 'object',
       properties: {
@@ -360,8 +349,7 @@ export class UsersController {
     },
     description: 'Forbidden resource',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -394,13 +382,11 @@ export class UsersController {
     description: 'User data',
     required: true,
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'User created successfully',
     type: User,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -456,13 +442,11 @@ export class UsersController {
     description: 'User contact data',
     required: true,
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     type: User,
     description: 'User contact',
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -483,8 +467,7 @@ export class UsersController {
     },
     description: 'You cannot add yourself as a contact',
   })
-  @ApiResponse({
-    status: 401,
+  @ApiUnauthorizedResponse({
     schema: {
       type: 'object',
       properties: {
@@ -500,8 +483,7 @@ export class UsersController {
     },
     description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: 403,
+  @ApiForbiddenResponse({
     schema: {
       type: 'object',
       properties: {
@@ -521,8 +503,7 @@ export class UsersController {
     },
     description: 'Forbidden resource',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -571,13 +552,11 @@ export class UsersController {
     description: 'User fields to update',
     required: true,
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'User updated successfully',
     type: User,
   })
-  @ApiResponse({
-    status: 401,
+  @ApiUnauthorizedResponse({
     schema: {
       type: 'object',
       properties: {
@@ -593,8 +572,7 @@ export class UsersController {
     },
     description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -651,13 +629,11 @@ export class UsersController {
     type: 'string',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'User updated successfully (Admin)',
     type: User,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -678,8 +654,7 @@ export class UsersController {
     },
     description: 'id is not a valid UUID',
   })
-  @ApiResponse({
-    status: 401,
+  @ApiUnauthorizedResponse({
     schema: {
       type: 'object',
       properties: {
@@ -695,8 +670,7 @@ export class UsersController {
     },
     description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: 403,
+  @ApiForbiddenResponse({
     schema: {
       type: 'object',
       properties: {
@@ -716,8 +690,7 @@ export class UsersController {
     },
     description: 'Forbidden resource',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -764,13 +737,11 @@ export class UsersController {
     type: 'string',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'User deleted successfully',
     type: User,
   })
-  @ApiResponse({
-    status: 401,
+  @ApiUnauthorizedResponse({
     schema: {
       type: 'object',
       properties: {
@@ -786,8 +757,7 @@ export class UsersController {
     },
     description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: 403,
+  @ApiForbiddenResponse({
     schema: {
       type: 'object',
       properties: {
@@ -807,8 +777,7 @@ export class UsersController {
     },
     description: 'Forbidden resource',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -852,13 +821,11 @@ export class UsersController {
     description: 'User contact data',
     required: true,
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'User contact deleted successfully',
     type: User,
   })
-  @ApiResponse({
-    status: 401,
+  @ApiUnauthorizedResponse({
     schema: {
       type: 'object',
       properties: {
@@ -874,8 +841,7 @@ export class UsersController {
     },
     description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: 403,
+  @ApiForbiddenResponse({
     schema: {
       type: 'object',
       properties: {
@@ -895,8 +861,7 @@ export class UsersController {
     },
     description: 'Forbidden resource',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -917,8 +882,7 @@ export class UsersController {
     },
     description: 'User not found',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -960,13 +924,11 @@ export class UsersController {
     type: 'string',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'User deleted successfully (Admin)',
     type: User,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -987,8 +949,7 @@ export class UsersController {
     },
     description: 'id is not a valid UUID',
   })
-  @ApiResponse({
-    status: 401,
+  @ApiUnauthorizedResponse({
     schema: {
       type: 'object',
       properties: {
@@ -1004,8 +965,7 @@ export class UsersController {
     },
     description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: 403,
+  @ApiForbiddenResponse({
     schema: {
       type: 'object',
       properties: {
@@ -1025,8 +985,7 @@ export class UsersController {
     },
     description: 'Forbidden resource',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {

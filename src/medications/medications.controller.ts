@@ -11,11 +11,16 @@ import {
   Put,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { ActiveUser } from 'src/common/decorators/active-user.decorator';
@@ -28,8 +33,7 @@ import { Medication } from './entities/medications.entity';
 import { MedicationsService } from './medications.service';
 
 @ApiBearerAuth()
-@ApiResponse({
-  status: 401,
+@ApiUnauthorizedResponse({
   schema: {
     type: 'object',
     properties: {
@@ -45,8 +49,7 @@ import { MedicationsService } from './medications.service';
   },
   description: 'Unauthorized',
 })
-@ApiResponse({
-  status: 403,
+@ApiForbiddenResponse({
   schema: {
     type: 'object',
     properties: {
@@ -73,8 +76,7 @@ export class MedicationsController {
   @Get()
   @Auth(Role.Admin)
   @ApiOperation({ summary: 'Get all medications' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'All medications',
     type: Medication,
     isArray: true,
@@ -93,13 +95,11 @@ export class MedicationsController {
     example: 1,
     required: true,
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Medication by ID',
     type: Medication,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -119,8 +119,7 @@ export class MedicationsController {
     },
     description: 'id is not a number',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -150,8 +149,7 @@ export class MedicationsController {
   @Get('user')
   @Auth(Role.User)
   @ApiOperation({ summary: 'Get medications by user ID' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Medications by user ID',
     type: Medication,
     isArray: true,
@@ -172,14 +170,12 @@ export class MedicationsController {
     example: '123e4567-e89b-12d3-a456-426614174000',
     required: true,
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Medications by user ID (Admin)',
     type: Medication,
     isArray: true,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -212,13 +208,11 @@ export class MedicationsController {
     type: CreateMedicationDTO,
     description: 'Medication creation data',
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Medication created successfully',
     type: Medication,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Medication could not be created',
     schema: {
       type: 'object',
@@ -276,13 +270,11 @@ export class MedicationsController {
     type: CreateMedicationDTO,
     description: 'Medication creation data',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Medication created successfully (Admin)',
     type: Medication,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Medication could not be created',
   })
   async addMedicationAdmin(
@@ -328,13 +320,11 @@ export class MedicationsController {
     },
     description: 'Medication data to update',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Medication updated successfully',
     type: Medication,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -354,8 +344,7 @@ export class MedicationsController {
     },
     description: 'id is not a number',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
@@ -397,13 +386,11 @@ export class MedicationsController {
     example: 1,
     required: true,
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Medication deleted successfully',
     type: Medication,
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     schema: {
       type: 'object',
       properties: {
@@ -423,8 +410,7 @@ export class MedicationsController {
     },
     description: 'id is not a number',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     schema: {
       type: 'object',
       properties: {
