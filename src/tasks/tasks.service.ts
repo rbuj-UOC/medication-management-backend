@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Task } from './tasks.interface';
 
@@ -22,5 +22,21 @@ export class TasksService {
       });
     });
     return taskList;
+  }
+
+  async deleteTask(id: string): Promise<Task> {
+    const job = this.schedulerRegistry.getCronJob(id);
+    if (!job) {
+      throw new NotFoundException(`Task with ID ${id} does not exist`);
+    }
+    if (job.isActive) {
+      await job.stop();
+    }
+    const task: Task = {
+      key: id,
+      next: job.nextDate().toJSDate().toISOString(),
+    };
+    this.schedulerRegistry.deleteCronJob(id);
+    return task;
   }
 }
