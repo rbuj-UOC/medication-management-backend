@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -12,6 +13,7 @@ export class MedicationsService {
     @InjectRepository(Medication)
     private medicationRepository: Repository<Medication>,
     private readonly usersService: UsersService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   async getActiveMedicationStats(): Promise<{
@@ -108,7 +110,7 @@ export class MedicationsService {
   async deleteMedication(id: number, userId: string) {
     const medication = await this.medicationRepository.findOne({
       where: { id, user: { id: userId } },
-      relations: ['user'],
+      relations: ['user', 'schedules'],
     });
     if (!medication) {
       throw new NotFoundException(`Medication with ID ${id} not found`);
@@ -116,6 +118,13 @@ export class MedicationsService {
     if (medication.user.id !== userId) {
       throw new NotFoundException(`UserIds aren't equal`);
     }
+    // Remove all the associated cron jobs
+    for (const schedule of medication.schedules) {
+      const key = schedule.id.toString();
+      console.log(`deleteTask: ${key}`);
+      this.schedulerRegistry.deleteCronJob(key);
+    }
+    // Delete the medication
     return await this.medicationRepository.remove(medication);
   }
 }

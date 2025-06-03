@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/enums/role.enum';
@@ -19,6 +20,7 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly notificationService: NotificationService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   async addContact(id: string, contactData: SelectUserDTO): Promise<User> {
@@ -55,10 +57,23 @@ export class UsersService {
   }
 
   async deleteUser(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['medications', 'medications.schedules'],
+    });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
+    // Remove all the associated cron jobs
+    for (const medication of user.medications) {
+      const schedules = medication.schedules;
+      for (const schedule of schedules) {
+        const key = schedule.id.toString();
+        console.log(`deleteTask: ${key}`);
+        this.schedulerRegistry.deleteCronJob(key);
+      }
+    }
+    // Delete the user
     return await this.userRepository.remove(user);
   }
 
