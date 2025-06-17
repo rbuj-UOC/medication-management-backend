@@ -52,6 +52,11 @@ export class UsersService {
   }
 
   async addUser(userData: CreateUserDTO): Promise<User> {
+    if ('role' in userData && userData.role !== Role.User) {
+      throw new BadRequestException(
+        `Invalid role: ${userData.role}. Only 'user' role is allowed.`,
+      );
+    }
     const user = this.userRepository.create(userData);
     return await this.userRepository.save(user);
   }
