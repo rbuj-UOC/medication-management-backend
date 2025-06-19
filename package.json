@@ -1,8 +1,8 @@
 {
-  "name": "nest-typescript-starter",
+  "name": "medication-management-backend",
   "private": true,
-  "version": "1.0.0",
-  "description": "Nest TypeScript starter repository",
+  "version": "25.6.0-beta.0",
+  "description": "Medication Management Backend",
   "license": "MIT",
   "scripts": {
     "build": "nest build",
