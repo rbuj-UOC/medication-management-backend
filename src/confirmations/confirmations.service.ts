@@ -3,6 +3,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SchedulesService } from 'src/schedules/schedules.service';
 import { Repository } from 'typeorm';
+import { ConfirmationDTO } from './dto/confirmation.dto';
 import { CreateConfirmationDTO } from './dto/create-confirmation.dto';
 import { Confirmation } from './entities/confirmations.entity';
 
@@ -63,5 +64,26 @@ export class ConfirmationsService {
       notification_at: notificationDate,
     });
     return this.confirmationRepository.save(newConfirmation);
+  }
+
+  getConfirmationHistory(user_id: string): Promise<ConfirmationDTO[]> {
+    return this.confirmationRepository
+      .createQueryBuilder('c')
+      .select(['c.notification_at', 'm.name', 's.time', 'c.confirmed'])
+      .innerJoin('c.schedule', 's')
+      .innerJoin('s.medication', 'm')
+      .where('m.user.id = :user_id', { user_id })
+      .orderBy('c.notification_at', 'ASC')
+      .getMany()
+      .then((confirmations) => {
+        return confirmations.map((confirmation) => {
+          return {
+            notification_at: confirmation.notification_at,
+            name: confirmation.schedule.medication.name,
+            time: confirmation.schedule.time,
+            confirmed: confirmation.confirmed,
+          } as ConfirmationDTO;
+        });
+      });
   }
 }

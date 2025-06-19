@@ -1,10 +1,17 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Post,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -14,6 +21,7 @@ import { Role } from 'src/common/enums/role.enum';
 import { ActiveUserInterface } from 'src/common/interfaces/active-user.interface';
 import { QueryFailedError } from 'typeorm';
 import { ConfirmationsService } from './confirmations.service';
+import { ConfirmationDTO } from './dto/confirmation.dto';
 import { CreateConfirmationDTO } from './dto/create-confirmation.dto';
 import { Confirmation } from './entities/confirmations.entity';
 
@@ -60,7 +68,7 @@ export class ConfirmationsController {
 
   @Post()
   @Auth(Role.User)
-  @ApiOperation({ summary: 'Create a new schedule' })
+  @ApiOperation({ summary: 'Crete/Update a schedule confirmation' })
   @ApiBody({
     type: CreateConfirmationDTO,
     description: 'Confirmation data',
@@ -95,5 +103,19 @@ export class ConfirmationsController {
       }
       throw new BadRequestException(message);
     }
+  }
+
+  @Get()
+  @Auth(Role.User)
+  @ApiOperation({ summary: 'Get confirmations by user ID' })
+  @ApiOkResponse({
+    description: 'Confirmations by user ID',
+    type: ConfirmationDTO,
+    isArray: true,
+  })
+  async getConfirmationHistory(
+    @ActiveUser() user: ActiveUserInterface,
+  ): Promise<ConfirmationDTO[]> {
+    return await this.confirmationsService.getConfirmationHistory(user.user_id);
   }
 }
