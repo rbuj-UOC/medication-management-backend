@@ -44,9 +44,23 @@ export class SchedulesService implements OnApplicationBootstrap {
     });
   }
 
+  async getScheduleByIdAndUUID(
+    schedule_id: number,
+    user_id: string,
+  ): Promise<Schedule> {
+    return this.scheduleRepository.findOne({
+      where: {
+        id: schedule_id,
+        medication: { user: { id: user_id } },
+      },
+      relations: ['medication', 'medication.user'],
+    });
+  }
+
   async getTodayScheduling(userId: string): Promise<Schedule[]> {
     return await this.scheduleRepository.find({
       select: {
+        id: true,
         start_date: true,
         medication: {
           name: true,

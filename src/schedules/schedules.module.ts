@@ -17,5 +17,6 @@ import { SchedulesSubscriber } from './subscriber/schedules.subscriber';
   ],
   providers: [SchedulesService, MedicationsService, SchedulesSubscriber],
   controllers: [SchedulesController],
+  exports: [SchedulesService],
 })
 export class SchedulesModule {}

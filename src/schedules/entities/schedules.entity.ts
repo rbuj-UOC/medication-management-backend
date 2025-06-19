@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Frequency } from 'src/common/enums/frequency.enum';
+import { Confirmation } from 'src/confirmations/entities/confirmations.entity';
 import { Medication } from 'src/medications/entities/medications.entity';
 import {
   Column,
@@ -7,6 +8,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -88,4 +90,8 @@ export class Schedule {
   })
   @JoinColumn({ name: 'medication_id' })
   medication: Medication;
+
+  // Confirmations associated with the schedule
+  @OneToMany(() => Confirmation, (confirmation) => confirmation.schedule)
+  confirmations: Confirmation[];
 }

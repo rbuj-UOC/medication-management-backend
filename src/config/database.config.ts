@@ -1,5 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { Confirmation } from 'src/confirmations/entities/confirmations.entity';
 import { Medication } from 'src/medications/entities/medications.entity';
 import { Notification } from 'src/notification/entities/notification.entity';
 import { Schedule } from 'src/schedules/entities/schedules.entity';
@@ -17,7 +18,7 @@ export default registerAs(
     ssl: {
       rejectUnauthorized: false,
     },
-    entities: [User, Medication, Notification, Schedule],
+    entities: [User, Medication, Notification, Schedule, Confirmation],
     synchronize: true,
   }),
 );
