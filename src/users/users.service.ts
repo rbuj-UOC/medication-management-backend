@@ -158,8 +158,4 @@ export class UsersService {
     this.userRepository.merge(user, updateData);
     return await this.userRepository.save(user);
   }
-
-  async getPushNotifications(userId: string): Promise<any> {
-    return await this.notificationService.getNotifications(userId);
-  }
 }

@@ -1,16 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import * as admin from 'firebase-admin';
 import { User } from 'src/users/entities/users.entity';
-import { Repository } from 'typeorm';
-import { Notification } from './entities/notification.entity';
 
 @Injectable()
 export class NotificationService {
-  constructor(
-    @InjectRepository(Notification)
-    private readonly notificationsRepo: Repository<Notification>,
-  ) {
+  constructor() {
     admin.initializeApp({
       credential: admin.credential.cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
@@ -20,23 +14,9 @@ export class NotificationService {
     });
   }
 
-  async getNotifications(userId: string): Promise<any> {
-    return await this.notificationsRepo.find({
-      where: { user: { id: userId } },
-      order: { created_at: 'DESC' },
-    });
-  }
-
   async sendPush(user: User, title: string, body: string): Promise<void> {
     try {
       if (user.device_token) {
-        await this.notificationsRepo.save({
-          user: user,
-          title,
-          body,
-          status: 'ACTIVE',
-          created_by: user.email,
-        });
         await admin
           .messaging()
           .send({

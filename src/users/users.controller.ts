@@ -182,54 +182,6 @@ export class UsersController {
     return await this.usersService.getUserContacts(user.user_id);
   }
 
-  @Get('push/notifications')
-  @Auth(Role.User)
-  @ApiOperation({ summary: 'Get push notifications' })
-  @ApiOkResponse({
-    description: 'Push notifications',
-    isArray: true,
-  })
-  @ApiUnauthorizedResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          example: 'Unauthorized',
-        },
-        statusCode: {
-          type: 'number',
-          example: 401,
-        },
-      },
-    },
-    description: 'Unauthorized',
-  })
-  @ApiForbiddenResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          example: 'Forbidden resource',
-        },
-        error: {
-          type: 'string',
-          example: 'Forbidden',
-        },
-        statusCode: {
-          type: 'number',
-          example: 403,
-        },
-      },
-    },
-    description: 'Forbidden resource',
-  })
-  @ApiBearerAuth()
-  async fetchPusNotifications(@ActiveUser() user: ActiveUserInterface) {
-    await this.usersService.getPushNotifications(user.user_id);
-  }
-
   @Get('user')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get user profile' })
