@@ -11,7 +11,7 @@ async function bootstrap() {
     .setDescription(
       'The medication management API that allows users to manage their medications.',
     )
-    .setVersion('1.0')
+    .setVersion('25.6.0-beta.0')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
