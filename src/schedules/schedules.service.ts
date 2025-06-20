@@ -1,4 +1,6 @@
 import {
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
   OnApplicationBootstrap,
@@ -6,6 +8,7 @@ import {
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CronJob } from 'cron';
+import { ConfirmationsService } from 'src/confirmations/confirmations.service';
 import { MedicationsService } from 'src/medications/medications.service';
 import { NotificationService } from 'src/notification/notification.service';
 import { Repository } from 'typeorm';
@@ -20,6 +23,8 @@ export class SchedulesService implements OnApplicationBootstrap {
     private scheduleRepository: Repository<Schedule>,
     private readonly medicationsService: MedicationsService,
     private readonly notificationService: NotificationService,
+    @Inject(forwardRef(() => ConfirmationsService))
+    private readonly confirmationsService: ConfirmationsService,
     private schedulerRegistry: SchedulerRegistry,
   ) {}
 
@@ -141,6 +146,44 @@ export class SchedulesService implements OnApplicationBootstrap {
     console.log(`createTask: ${key} -> ${cron_expression}`);
     const task = new CronJob(cron_expression, async () => {
       try {
+        // Check if the confirmation exists. If it does, skip sending the notification.
+        const cronJob = this.schedulerRegistry.getCronJob(
+          schedule.id.toString(),
+        );
+        if (!cronJob) {
+          throw new NotFoundException('Cron job not found for this schedule');
+        }
+        const lastDate = cronJob.lastDate();
+        lastDate.setSeconds(0); // Set seconds to 0 for consistency
+        lastDate.setMilliseconds(0); // Set milliseconds to 0 for consistency
+        console.log(
+          `Last execution date for schedule ID ${schedule.id}: ${lastDate}`,
+        );
+        // Check if a confirmation already exists for this schedule and lastDate
+        const confirmationExits =
+          await this.confirmationsService.getConfirmationByScheduleIdAndDate(
+            schedule.id,
+            lastDate,
+          );
+        if (confirmationExits) {
+          console.log(
+            `Confirmation already exists for schedule ID ${schedule.id} at ${lastDate instanceof Date ? lastDate.toISOString() : lastDate}`,
+          );
+          return;
+        }
+        // If no confirmation exists, proceed to create a new confirmation and to send the notification
+        const newConfirmation =
+          await this.confirmationsService.createConfirmation(
+            false,
+            schedule,
+            lastDate,
+          );
+        if (!newConfirmation) {
+          console.error(
+            `Failed to create confirmation for schedule ID ${schedule.id} at ${lastDate instanceof Date ? lastDate.toISOString() : lastDate}`,
+          );
+        }
+        // Send push notification
         const scheduledMedication = await this.scheduleRepository.findOne({
           select: {
             id: true,
@@ -160,7 +203,8 @@ export class SchedulesService implements OnApplicationBootstrap {
         if (
           scheduledMedication &&
           scheduledMedication.medication.disabled === false &&
-          scheduledMedication.medication.user.device_token
+          scheduledMedication.medication.user.device_token &&
+          scheduledMedication.medication.user.device_token.trim() !== ''
         ) {
           await this.notificationService.sendPush(
             scheduledMedication.medication.user,
